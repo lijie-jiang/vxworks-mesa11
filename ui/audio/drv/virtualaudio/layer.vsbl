@@ -1,0 +1,26 @@
+/* layer.vsbl - Virtual Audio Driver */
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+07jan16,mze  add FEATURE (US73137)
+10aug15,iwr  updated HELP field
+12mar14,y_f  written
+*/
+
+Layer VIRTUAL_AUDIO
+    {
+    SYNOPSIS        Virtual audio driver
+    HELP            This layer provides support for the playback of Wav files.
+    VERSION         1.0.0.0
+    FEATURE         AUDIO
+    OPTIONAL        YES
+    DEFAULT         NO
+    }

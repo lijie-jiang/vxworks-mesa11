@@ -1,0 +1,35 @@
+/* layer.vsbl - Khronos layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+05jan16,rtm  add UI FEATURE (US73137)
+23nov15,rpc  Update for Mesa 11.0 (US70717)
+22dec14,yat  Add Mesa mangle (US24713)
+22dec14,yat  Add DOC_BUILD NO and remove VSB_REQUIRES (US46449)
+10nov14,yat  Update version for OpenCL support (US48896)
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer KHRONOS
+    {
+    SYNOPSIS        Khronos specification headers
+    HELP            This provides the Khronos specification headers.
+    VERSION         1.2.0.0
+    FEATURE         UI
+    FEATURE_PROVIDES KHRONOS_MESA KHRONOS_MESA11
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.2.0.0, FEATURE, UI}
+    }

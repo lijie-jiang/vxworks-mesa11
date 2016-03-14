@@ -1,0 +1,35 @@
+/* layer.vsbl - Event Devices Demos */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+05jan16,rtm  update version to 1.1.1.1, add UI and RETROFIT (US73137)
+14sep15,jnl  support querying size of the touchscreen area and update version 
+             to 1.1.1.0. (V7GFX-238)
+24jun14,y_f  add multitouch support and update version to 1.1.0.0 (US41403)
+26may14,y_f  remove LAYER_REQUIRES FBDEV_COMMON (V7GFX-165)
+22may14,yat  add LAYER_REQUIRES FBDEV_COMMON for include fbdev.h
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+06jan14,rdl  add HELP field, correct formatting 
+08aug13,y_f  create
+*/
+
+Layer DEMO
+    {
+    SYNOPSIS        Event device demos
+    HELP            This provides some user input device demos.
+    VERSION         1.1.1.1
+    FEATURE         UI
+    LAYER_REQUIRES  EVDEV_LIB
+    OPTIONAL        YES
+    DEFAULT         NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.*.*, DEFAULT, NO} \
+                    {REPLACE, 1.0.0.0 - 1.1.1.1, FEATURE, UI}
+    }

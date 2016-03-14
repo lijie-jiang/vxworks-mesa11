@@ -1,0 +1,40 @@
+/* layer.vsbl - Frame buffer driver demos layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+17feb16,yat  Add FEATURE_REQUIRES FBDEV_FIXED_FBMODE_OFFSET (US67554)
+05jan16,rtm  add UI and RETROFIT (US73137)
+02dec15,yat  Update version to 1.0.4.0 to support INCLUDE_FBDEV_INIT (US71171)
+22sep15,yat  Update version to fix demos cdf (V7GFX-284)
+12jun15,yat  Update version to 1.0.3.0 for xlnxlcvc (US58560)
+16apr15,yat  Add DOC_BUILD NO (V7GFX-245)
+22dec14,yat  Update version to 1.0.2.0 for Intel and LP64 support (US50456)
+18jun14,yat  Update version to 1.0.1.0 for dynamic RTP demos (US11227)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer DEMOS
+    {
+    SYNOPSIS        Frame buffer driver demo programs
+    HELP            This provides frame buffer driver demo programs.
+    VERSION         1.0.4.0
+    FEATURE         UI
+    LAYER_REQUIRES  FBDEV_COMMON
+    FEATURE_REQUIRES {FBDEV_COMMON FBDEV_FIXED_FBMODE_OFFSET}
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.4.0, FEATURE, UI}
+    }

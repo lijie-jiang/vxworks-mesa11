@@ -1,0 +1,36 @@
+/* layer.vsbl - I915 driver layer file */
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+modification history
+--------------------
+24feb16,yat  Add RETROFIT FEATURE_REQUIRES DRM3 (US75033)
+05jan16,rtm  add UI and RETROFIT (US73137)
+29oct15,yat  Update version to 4.4.0.0 (F3588)
+16apr15,yat  Add DOC_BUILD NO (V7GFX-245)
+22jan15,qsn  Port Intel HD graphics driver to VxWorks 7 (US50702)
+14feb14,rdl  replace DEPENDS with API_DEPENDS (US48907)
+06jan14,rdl  add HELP field (US48907)
+*/
+
+
+Layer ITLI915
+    {
+    SYNOPSIS        Intel HD graphics driver
+    HELP            This provides the Intel HD graphics driver.
+    VERSION         4.4.0.0
+    FEATURE         UI
+    VSB_REQUIRES    ARCH_i86
+    FEATURE_REQUIRES {GPUDEV_DRM DRM44}
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 3.*.*.*, FEATURE_REQUIRES, {GPUDEV_DRM DRM3}} \
+                    {REPLACE, 1.0.0.0 - 4.4.0.0, FEATURE, UI}
+    }

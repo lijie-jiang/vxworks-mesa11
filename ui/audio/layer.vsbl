@@ -1,0 +1,32 @@
+/* layer.vsbl - audio container layer */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+07jan16,mze  add FEATURE (US73137)
+10aug15,iwr  updated HELP field
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+03jan14,rdl  merge modifications from vx7
+06jan14,rdl  add HELP field, correct formatting
+30oct13,y_f  written
+*/
+
+
+Layer AUDIO
+    {
+    SYNOPSIS        Audio devices
+    HELP            This provides support for audio devices.
+    VERSION         1.0.0.2
+    FEATURE         AUDIO
+    OPTIONAL        YES
+    DEFAULT         YES
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.0.1, FEATURE, AUDIO}
+    }

@@ -1,0 +1,39 @@
+/* layer.vsbl - libDRM GPU driver support layer */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+modification history
+--------------------
+24feb16,yat  Add RETROFIT FEATURE_PROVIDES LIBDRM3 (US75033)
+05jan16,rtm  add UI and RETROFIT (US73137)
+06nov15,yat  Update version to 2.4.65.0 and add RETROFIT VSB_REQUIRES (US67563)
+06nov15,yat  Add DOC_BUILD NO (V7GFX-245)
+22oct15,yat  Add LP64 and update version as this layer supports LP64 only
+07jan15,yat  Port libDRM to VxWorks 7 (US24705)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+06jan14,rdl  add HELP field, correct formatting
+*/
+
+
+Layer LIBDRM
+    {
+    SYNOPSIS        libDRM GPU driver support layer
+    HELP            This provides the libDRM GPU driver support layer.
+    VERSION         2.4.65.0
+    FEATURE         UI
+    LAYER_REQUIRES  GPUDEV_COMMON
+    VSB_REQUIRES    (ARCH_i86 && gnu_SUPPORTED && !COMPAT69)
+    FEATURE_PROVIDES LIBDRM44
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 2.4.58.*, VSB_REQUIRES, (ARCH_i86 && LP64 && gnu_SUPPORTED && !COMPAT69)} \
+                    {REPLACE, 1.0.0.0 - 2.4.58.*, FEATURE_PROVIDES, LIBDRM3} \
+                    {REPLACE, 1.0.0.0 - 2.4.65.0, FEATURE, UI}
+    }

@@ -1,0 +1,40 @@
+/* layer.vsbl - Event Devices Framework Libraries */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+05jan16,rtm  update version to 1.1.2.2, add UI and RETROFIT (US73137)
+21dec15,jnl  fixed null pointer defect and update version to 1.1.2.1. 
+             (V7GFX-302)
+14sep15,jnl  support querying size of the touchscreen area and update version 
+             to 1.1.2.0. (V7GFX-238)
+29dec14,y_f  fixed enabling device error in SMP mode and updated version to
+             1.1.1.1. (V7GFX-228)
+21oct14,y_f  add evdev to core and update version to 1.1.1.0 (VXW7-3211)
+23sep14,rbc  Upgrade version number to 1.1.0.1 to init keyboard and mouse
+             before network driver (V7CON-179)
+24jun14,y_f  add multitouch support and update version to 1.1.0.0 (US41403)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+06jan14,rdl  add HELP field, correct formatting 
+26jun13,y_f  create
+*/
+
+Layer LIB
+    {
+    SYNOPSIS        Event devices framework libraries
+    HELP            This provides the input event device framework libraries.
+    VERSION         1.1.2.2
+    FEATURE         UI
+    OPTIONAL        YES
+    LAYER_REQUIRES  CORE_KERNEL
+    DEFAULT         NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.*.*, DEFAULT, NO} \
+                    {REPLACE, 1.0.0.0 - 1.1.2.2, FEATURE, UI}
+    }

@@ -1,0 +1,43 @@
+# This file contains evdev library configuration flags and options
+
+# Copyright (c) 2012, 2015 Wind River Systems, Inc.
+#
+# The right to copy, distribute, modify or otherwise make use
+# of this software may be licensed only pursuant to the terms
+# of an applicable Wind River license agreement.
+
+#
+# Modification History
+# --------------------
+# 14jul15,jnl  fixed multitouch protocol implementation incorrect. (V7GFX-244) 
+# 31dec12,y_f  created
+
+config EVDEV_HOT_PLUG
+    bool "Hot Plug"
+    default y
+    help
+        Enable evdev hot plug feature
+
+config EVDEV_COMPATIBLE_MODE
+    bool "Compatible Mode"
+    default y
+    help
+        Enable evdev compatible mode
+
+config EVDEV_OPTIMIZED_MODE
+    bool "Optimized Mode"
+    default y
+    help
+        Enable evdev optimized mode
+
+config EVDEV_SINGLE_TOUCH_MODE
+    bool "Single touch Mode"
+    default n
+    help
+        Enable evdev Single touch mode
+
+config EVDEV_DISPLAY_POINT_TRANSLATE
+    bool "Translate the display point"
+    default y
+    help
+        Translate the raw values to values based on display resolution

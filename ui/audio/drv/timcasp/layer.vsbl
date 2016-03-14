@@ -1,0 +1,32 @@
+/* layer.vsbl - TI McASP audio driver */
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+07jan16,mze  add FEATURE (US73137)
+10aug15,iwr  updated HELP field
+02sep14,y_f  updated version to 1.0.1.0 for fixing the defect about driver
+             register (V7GFX-208)
+21mar14,y_f  written
+*/
+
+Layer TI_MCASP
+    {
+    SYNOPSIS        TI McASP audio driver
+    HELP            This is the VxBus driver for TI Multichannel Audio Serial Port (McASP). This driver provides callback methods to support the audio library.
+    VERSION         1.0.1.2
+    FEATURE         AUDIO
+    VSB_REQUIRES    CPU_ARMARCH7
+    LAYER_REQUIRES  VXBUS_CORE VXBUS_BUSLIB VXBUS_SUBSYSTEM FDT
+    OPTIONAL        YES
+    DEFAULT         NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.0.0, DEFAULT, NO} \
+                    {REPLACE, 1.0.0.0 - 1.0.1.2, FEATURE, AUDIO}
+    }

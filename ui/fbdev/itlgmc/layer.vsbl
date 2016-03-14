@@ -1,0 +1,36 @@
+/* layer.vsbl - Intel Graphics and Memory Controller frame buffer driver layer */
+
+/*
+ * Copyright (c) 2014-2016, Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+24feb16,yat  Add RETROFIT FEATURE_REQUIRES GPUDEV_LIBDRM (US75033)
+05jan16,rtm  add UI and RETROFIT (US73137)
+14sep15,yat  Update version to 1.0.1.0 for GEM support (US66034)
+16apr15,yat  Add DOC_BUILD NO and update version (V7GFX-245)
+08jan15,qsn  Update layer LIBDRM to GPUDEV_LIBDRM (US48907)
+20dec14,qsn  Initial VxWorks 7 release (US48907)
+*/
+
+
+Layer ITLGMCFB
+    {
+    SYNOPSIS        Intel Graphics and Memory Controller frame buffer driver
+    HELP            This provides the Intel Graphics and Memory Controller frame buffer driver.
+    VERSION         1.0.1.0
+    FEATURE         UI
+    LAYER_REQUIRES  FBDEV_COMMON GPUDEV_ITLI915
+    FEATURE_REQUIRES {GPUDEV_LIBDRM LIBDRM44}
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.0.*, FEATURE_REQUIRES, {GPUDEV_LIBDRM LIBDRM3}} \
+                    {REPLACE, 1.0.0.0 - 1.0.1.0, FEATURE, UI}
+    }

@@ -1,0 +1,47 @@
+/* layer.vsbl - Mesa layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+16feb16,yat  Add RETROFIT FEATURE_PROVIDES MESA9 (US24710)
+11jan16,rtm  add UI and RETROFIT (US73137)
+11dec15,yat  Update to Mesa 11.0.6.0 (US24710)
+08oct15,yat  Add GFX_FIXED_FBMODE_OFFSET (US67554)
+11jan16,rtm  update version to 9.2.5.2, add UI and RETROFIT (US73137)
+12jun15,yat  Update version to 9.2.5.1 for xlnxlcvc offset (US58560)
+16apr15,yat  Add DOC_BUILD NO (V7GFX-245)
+22dec14,yat  Port Mesa to VxWorks 7 (US24705)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field
+*/
+
+
+Layer MESA
+    {
+    SYNOPSIS        Mesa library
+    HELP            This provides the Mesa library.
+    VERSION         11.0.6.0
+    FEATURE         UI
+    LAYER_REQUIRES  RASTER_COMMON
+    VSB_REQUIRES    (gnu_SUPPORTED && !ARCH_ppc)
+    FEATURE_REQUIRES {KHRONOS KHRONOS_MESA11} \
+                     {XML XML_USER_LIB} \
+                     {FBDEV_COMMON FBDEV_FIXED_FBMODE_OFFSET} \
+                     {ARCH_i86, {GPUDEV_LIBDRM LIBDRM44},}
+    FEATURE_PROVIDES MESA11
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 11.0.6.0, FEATURE, UI} \
+                    {REPLACE, 1.0.0.0 - 9.2.5.*, FEATURE_PROVIDES, MESA9} \
+                    {REPLACE, 1.0.0.0 - 9.2.5.*, VSB_REQUIRES, (gnu_SUPPORTED && !ARCH_ppc)}
+    }

@@ -1,0 +1,24 @@
+# Copyright (c) 2015-2016 Wind River Systems, Inc.
+#
+# The right to copy, distribute, modify or otherwise make use
+# of this software may be licensed only pursuant to the terms
+# of an applicable Wind River license agreement.
+
+#
+# Modification History
+# --------------------
+# 04feb16,yat  Add FBDEV initialization (US74938)
+# 11mar15,yat  Add FBDEV task option (US55410)
+#
+
+config FBDEV_TASK
+    bool "Frame buffer driver task mode"
+    default y
+    help
+        When selected, this option enables the frame buffer driver to run a separate task that proxies set video mode and set frame buffer address between frame buffer IOCTL and DRM IOCTL.
+
+config FBDEV_INIT
+    bool "Frame buffer driver initialization"
+    default y
+    help
+        When selected, this option exposes the frame buffer driver initialization option. This option should always be selected.

@@ -1,0 +1,31 @@
+/* layer.vsbl - Event Devices Drivers */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+05jan16,rtm  add UI Feature (US73137)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+06jan14,rdl  add HELP field, correct formatting 
+03jul13,y_f  create
+*/
+
+
+Layer DRV
+    {
+    SYNOPSIS        Event device drivers
+    HELP            This provides the user input event device drivers.
+    VERSION         1.0.0.1
+    FEATURE         UI
+    LAYER_REQUIRES  EVDEV_LIB
+    OPTIONAL        YES
+    DEFAULT         YES
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0, FEATURE, AUDIO}
+    }

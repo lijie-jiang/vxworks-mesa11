@@ -1,0 +1,31 @@
+/* layer.vsbl - Common GPU resources layer */
+
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+05jan16,rtm  update version to 1.0.1.1, add UI and RETROFIT (US73137)
+22dec14,yat  Add DOC_BUILD NO (US46449)
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer COMMON
+    {
+    SYNOPSIS        Common GPU resources
+    HELP            This provides common GPU resources.
+    VERSION         1.0.1.1
+    FEATURE         UI
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.1.1, FEATURE, UI}
+    }

@@ -1,0 +1,36 @@
+/* layer.vsbl - Intel Graphics Controller frame buffer driver layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+25jan16,yat  Add DOC_BUILD NO and update version to 1.0.2.0 (V7GFX-245)
+05jan16,rtm  add UI and RETROFIT (US73137)
+01apr15,yat  Update version for pmap rework (US46449)
+18sep14,yat  Update version for pmapPrivateUnmap message fix (V7GFX-214)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer ITLGCFB 
+    {
+    SYNOPSIS        Intel graphics controller frame buffer driver
+    HELP            This provides the Intel graphics controller frame buffer driver.
+    VERSION         1.0.2.0
+    FEATURE         UI
+    LAYER_REQUIRES  FBDEV_COMMON
+    VSB_REQUIRES    (CPU_ATOM && COMPAT69)
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.2.0, FEATURE, UI}
+    }

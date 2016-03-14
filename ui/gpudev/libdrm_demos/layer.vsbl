@@ -1,0 +1,27 @@
+/* layer.vsbl - libDRM demos layer */
+/*
+ * Copyright (c) 2015 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+modification history
+--------------------
+16sep15,yat  Written (US24710)
+*/
+
+
+Layer LIBDRM_DEMOS
+    {
+    SYNOPSIS        libDRM demo programs
+    HELP            This provides the libDRM demo programs.
+    VERSION         1.0.0.0
+    FEATURE         UI
+    FEATURE_REQUIRES {GPUDEV_LIBDRM LIBDRM44}
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    }

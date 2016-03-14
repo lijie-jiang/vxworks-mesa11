@@ -1,0 +1,28 @@
+/* layer.vsbl - Audio Driver Framework Demos */
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+07jan16,mze  add FEATURE (US73137)
+15sep15,c_l  updated version to 1.0.1.0 (F4748)
+14feb14,y_f  create
+*/
+
+Layer DEMO
+    {
+    SYNOPSIS        Audio driver framework demos
+    HELP            This provides some audio playback and record demos.
+    VERSION         1.0.1.1
+    FEATURE         AUDIO
+    LAYER_REQUIRES  AUDIO_LIB
+    OPTIONAL        YES
+    DEFAULT         YES
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.1.1, FEATURE, AUDIO}
+    }

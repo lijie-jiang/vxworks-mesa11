@@ -1,0 +1,35 @@
+/* layer.vsbl - event devices container layer  */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+05jan16,rtm  Add UI Feature (US73137)
+23sep14,rbc  Upgrade version number to 1.0.0.2 to init keyboard and mouse
+             before network driver (V7CON-179)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+06jan14,rdl  add HELP field, correct formatting 
+12sep13,x_z  added compatibility requirement.
+26jun13,y_f  create
+*/
+
+
+Layer EVDEV
+    {
+    SYNOPSIS        Event device support
+    HELP            This provides an event device framework that manages all input devices and events.
+    VERSION         1.0.0.3
+    FEATURE         UI
+    VSB_REQUIRES
+    LAYER_REQUIRES
+    OPTIONAL        YES
+    DEFAULT         YES
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.0.2, FEATURE, UI}
+    }

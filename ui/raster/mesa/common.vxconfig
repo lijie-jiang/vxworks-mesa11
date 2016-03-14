@@ -1,0 +1,32 @@
+# common.vxconfig
+#
+# Copyright 2014-2015, Wind River Systems, Inc.
+#      
+# The right to copy, distribute, modify or otherwise make use
+# of this software may be licensed only pursuant to the terms
+# of an applicable Wind River license agreement.
+#
+# modification history
+# -------------------- 
+# 15sep15,yat  Add Mesa DRI i965 (US24710)
+# 22dec14,yat  Port Mesa to VxWorks 7 (US24705)
+
+config MESA_MANGLE
+    bool "Mangle APIs"
+    default y
+    help
+        When selected, this option mangles OpenGL APIs namespace or when not selected, this option does not mangle OpenGL APIs namespace.
+
+#config MESA_GPUDEV_DRI_I915
+#   bool "Mesa GPU DRI i915 driver"
+#    default n
+#    depends on GPUDEV_LIBDRM
+#    help
+#        When selected, this option enables Mesa GPU OpenGL APIs using DRI i915 driver.
+
+config MESA_GPUDEV_DRI_I965
+    bool "Mesa GPU DRI i965 driver"
+    default y
+    depends on GPUDEV_LIBDRM
+    help
+        When selected, this option enables Mesa GPU OpenGL APIs using DRI i965 driver.

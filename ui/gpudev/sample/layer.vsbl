@@ -1,0 +1,27 @@
+/* layer.vsbl - Sample DRM device driver layer file */
+/*
+ * Copyright (c) 2015 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+modification history
+--------------------
+24jul15,yat  Written (US60452)
+*/
+
+
+Layer SAMPLEDRM
+    {
+    SYNOPSIS        Sample DRM device driver
+    HELP            This provides the sample DRM device driver.
+    VERSION         1.0.0.0
+    FEATURE         UI
+    FEATURE_REQUIRES {GPUDEV_DRM DRM44}
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    }

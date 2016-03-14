@@ -1,0 +1,34 @@
+/* layer.vsbl - Frame buffer driver tests layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+02feb16,yat  Update version for updating tests
+05jan16,rtm  add FEATURE UI (US73137)
+16apr15,yat  Add DOC_BUILD NO (V7GFX-245)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer TESTS
+    {
+    SYNOPSIS        Frame buffer driver test programs
+    HELP            This provides frame buffer driver test programs.
+    VERSION         1.0.1.0
+    FEATURE         UI
+    LAYER_REQUIRES  FBDEV_COMMON
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.1.0, FEATURE, UI}
+    }
