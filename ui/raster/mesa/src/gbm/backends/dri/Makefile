@@ -12,16 +12,13 @@
 # 22dec14,yat  Port Mesa to VxWorks 7 (US24705)
 
 LIB_BASE_NAME = gfxMesaEGL
-
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/defs.library.mk
-else
-include $(WIND_KRNL_MK)/defs.library.mk
-endif
-
-LIB_FORMAT = both
-
-EXTRA_INCLUDE += -I../../main -I../../../../include
+TGT_DIR=$(WIND_BASE)/target
+LIB_BASE_NAME = gfxMesaEGL
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
+EXTRA_INCLUDE += -I../../main -I../../../../h   -I../../../../include -I../../../../../../gpudev/libdrm/h \
+               -I../../../../../../khronos/h 
 
 EXTRA_DEFINE += -DHAVE_PTHREAD=1
 
@@ -33,7 +30,7 @@ _MESA_DRI=yes
 endif
 
 ifdef _MESA_DRI
-EXTRA_DEFINE += -D_EGL_BUILT_IN_DRIVER_DRI2 -DHAVE_DRM_PLATFORM
+EXTRA_DEFINE += -D_EGL_BUILT_IN_DRIVER_DRI2 -DHAVE_DRM_PLATFORM -DHAVE_LIBDRM
 else
 EXTRA_DEFINE += -D__NOT_HAVE_DRM_H
 endif
@@ -48,15 +45,8 @@ C_SOURCE = $(wildcard *.c)
 OBJS = $(C_SOURCE:.c=.o)     
 endif
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.library.mk 
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
+include $(TGT_DIR)/h/make/rules.library
 
-#
-# mesa is considered 3rd party code
-# all compiler warnings will be suppressed by the following
-#
-CC_WARNINGS = $(CC_WARNINGS_NONE)
-C++_WARNINGS = $(CC_WARNINGS_NONE)
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers

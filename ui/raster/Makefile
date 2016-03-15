@@ -11,5 +11,15 @@
 # 12jan16,mze  remove dead macros
 # 24jan14,mgc  Modified for VxWorks 7 release
 
+TGT_DIR=$(WIND_BASE)/target
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+LIB_BASE_NAME=mesa
+
+OBJS=
+export _WRS_CONFIG_MESA_GPUDEV_DRI_I965=y
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+SUBDIRS = mesa
+
+include $(TGT_DIR)/h/make/rules.library

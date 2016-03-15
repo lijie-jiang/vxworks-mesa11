@@ -10,10 +10,10 @@
 # --------------------
 # 22dec14,yat  Port Mesa to VxWorks 7 (US24705)
 
-SUBDIRS = backends main
+TGT_DIR=$(WIND_BASE)/target
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.library.mk 
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+SUBDIRS = backends main
+include $(TGT_DIR)/h/make/rules.library

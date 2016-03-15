@@ -13,16 +13,16 @@
 # 22dec14,yat  Port Mesa to VxWorks 7 (US24705)
 
 LIB_BASE_NAME = gfxMesaEGL
+TGT_DIR=$(WIND_BASE)/target
+LIB_BASE_NAME = gfxMesaEGL
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/defs.library.mk
-else
-include $(WIND_KRNL_MK)/defs.library.mk
-endif
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
+EXTRA_INCLUDE += -I../../main -I../../../../h -I../../../../../../khronos/h \
+                 -I../../../../../../fbdev/common/h -I../../../../include
 
-LIB_FORMAT = both
-
-EXTRA_INCLUDE += -I../../main -I../../../../include
+#EXTRA_INCLUDE += -I../../main -I../../../../include
 
 EXTRA_DEFINE += -DHAVE_PTHREAD=1
 
@@ -45,10 +45,10 @@ endif
 
 C_SOURCE = $(wildcard *.c)
 
-OBJS = $(C_SOURCE:.c=.o)     
+OBJS = $(C_SOURCE:.c=.o)    
+include $(TGT_DIR)/h/make/rules.library
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.library.mk 
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers
+

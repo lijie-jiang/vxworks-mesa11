@@ -12,8 +12,10 @@
 
 SUBDIRS = dri
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.library.mk 
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
+TGT_DIR=$(WIND_BASE)/target
+
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+SUBDIRS = dri
+include $(TGT_DIR)/h/make/rules.library

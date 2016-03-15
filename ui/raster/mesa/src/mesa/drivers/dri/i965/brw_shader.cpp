@@ -1309,6 +1309,7 @@ backend_shader::dump_instructions()
 {
    dump_instructions(NULL);
 }
+extern unsigned int geteuid();
 
 void
 backend_shader::dump_instructions(const char *name)

@@ -11,16 +11,18 @@
 # 24nov15,rpc  Port Mesa 11.0 to VxWorks 7 (US70717)
 
 LIB_BASE_NAME = gfxMesa
+TGT_DIR=$(WIND_BASE)/target
+LIB_BASE_NAME = gfxMesa
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/defs.library.mk
-else
-include $(WIND_KRNL_MK)/defs.library.mk
-endif
 
-LIB_FORMAT = both
+#EXTRA_INCLUDE += -I../../../include -I.. -I../../mapi -I../../glsl -I../.. -I../../gallium/auxiliary \
+#               -I../../gallium/include -I../../../../../khronos/h -I../../../../../fbdev/common/h
 
-EXTRA_INCLUDE += -I../../include -I../mesa -I../mapi -I.. -I../gallium/auxiliary -I../gallium/include
+EXTRA_INCLUDE += -I../../include -I../mesa -I../mapi -I.. -I../gallium/auxiliary -I../gallium/include \
+              -I../../../../khronos/h
 
 EXTRA_DEFINE += -DHAVE_PTHREAD=1
 
@@ -47,15 +49,10 @@ CPP_SOURCE = $(wildcard *.cpp)
 OBJS = $(C_SOURCE:.c=.o)
 OBJS += $(CPP_SOURCE:.cpp=.o)
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.library.mk 
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
+include $(TGT_DIR)/h/make/rules.library
 
-#
-# mesa is considered 3rd party code
-# all compiler warnings will be suppressed by the following
-#
-CC_WARNINGS = $(CC_WARNINGS_NONE)
-C++_WARNINGS = $(CC_WARNINGS_NONE)
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers
+
+
