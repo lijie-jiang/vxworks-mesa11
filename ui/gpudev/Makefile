@@ -14,11 +14,6 @@
 
 TGT_DIR=$(WIND_BASE)/target
 
-LIB_BASE_NAME=ui
-
-OBJS=
-export _WRS_CONFIG_COMPAT69=y
-export _WRS_CONFIG_VXBUS_LEGACY=y
 DOC_OPTS = -mg -nostrict -missingok
 
 include $(TGT_DIR)/h/make/defs.library

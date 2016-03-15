@@ -13,9 +13,6 @@
 
 
 TGT_DIR=$(WIND_BASE)/target
-LIB_BASE_NAME=mesa
-
-OBJS=
 
 DOC_OPTS = -mg -nostrict -missingok
 

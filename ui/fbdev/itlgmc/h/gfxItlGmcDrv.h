@@ -38,7 +38,7 @@ modification history
 
 /* defines */
 
-#define GFX_USE_PMAP
+#undef GFX_USE_PMAP
 #define GFX_VSYNC_POLL
 
 /* For FB_IOCTL_GET_VIDEO_MODES to return current video mode instead of
@@ -77,6 +77,9 @@ typedef struct
     FB_VIDEO_MODE*                  fbModesDb;
     ULONG                           fbModesCount;
     ULONG                           fbSize;
+#if !defined(GFX_USE_PMAP)
+    BOOL                            fbRtpFreeMem;
+#endif
     /* Internal data */
     void*                           firstPhysAddr;  /* address of first buffer   */
     void*                           firstVirtAddr;  /* address of first buffer   */

@@ -14,10 +14,6 @@
 
 TGT_DIR=$(WIND_BASE)/target
 
-LIB_BASE_NAME=drm
-
-OBJS=
-
 DOC_OPTS = -mg -nostrict -missingok
 
 include $(TGT_DIR)/h/make/defs.library

@@ -12,10 +12,6 @@
 # 24jan14,mgc  Modified for VxWorks 7 release
 
 TGT_DIR=$(WIND_BASE)/target
-
-LIB_BASE_NAME=ui
-
-OBJS=
 export _WRS_CONFIG_MESA_GPUDEV_DRI_I965=y
 export _WRS_CONFIG_COMPAT69=y
 export _WRS_CONFIG_VXBUS_LEGACY=y

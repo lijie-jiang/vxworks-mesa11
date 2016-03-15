@@ -27,10 +27,8 @@ modification history
 
 /* defines */
 
-#if defined(_COMPAT69)
-#else
-#define GFX_USE_PMAP
-#endif
+
+#undef GFX_USE_PMAP
 
 /* typedefs */
 

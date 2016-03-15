@@ -13,9 +13,6 @@
 
 TGT_DIR=$(WIND_BASE)/target
 
-LIB_BASE_NAME=drm
-
-OBJS=
 export _WRS_CONFIG_COMPAT69=y
 DOC_OPTS = -mg -nostrict -missingok
 
