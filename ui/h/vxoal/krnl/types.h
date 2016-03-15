@@ -135,13 +135,13 @@ NOMANUAL
 
 #define le16_to_cpu(x) ((UINT16)(x))
 #define cpu_to_le16(x) ((UINT16)(x))
-
+#ifndef false
 enum
     {
     false   = 0,
     true    = 1
     };
-
+#endif
 typedef INT8            __s8;
 typedef INT16           __s16;
 typedef INT32           __s32;
@@ -164,8 +164,10 @@ typedef UINT64          u64;
 
 #define U64_C(x)        (x)
 
+#ifndef bool
+#undef bool
 typedef BOOL            bool;
-
+#endif
 typedef unsigned        gfp_t;
 
 typedef UINT16          __le16;

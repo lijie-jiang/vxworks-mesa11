@@ -28,7 +28,7 @@ NOMANUAL
 
 #ifndef _VXWORKS_PCI_H_
 #define _VXWORKS_PCI_H_
-#define _WRS_CONFIG_VXBUS_LEGACY 1
+
 #if defined(_WRS_CONFIG_VXBUS_LEGACY)
 #include <vxBusLib.h> /* for VXB_DEVICE_ID */
 #include <hwif/vxbus/vxBus.h>

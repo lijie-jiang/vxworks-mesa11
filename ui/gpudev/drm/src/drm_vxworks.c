@@ -35,7 +35,7 @@ modification history
 
 typedef struct
     {
-    VXB_DEVICE_ID                      vxbDevId;
+    VXB_DEV_ID                      vxbDevId;
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
     VXB_RESOURCE                   *pResIrq;
 #endif
@@ -63,8 +63,8 @@ static GFX_COMP gfxComp =
 
 static int drmDrvNum = ERROR;
 
-static STATUS pciDrmDevProbe (VXB_DEVICE_ID);
-static STATUS pciDrmDevAttach (VXB_DEVICE_ID);
+static STATUS pciDrmDevProbe (VXB_DEV_ID);
+static STATUS pciDrmDevAttach (VXB_DEV_ID);
 
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
 static VXB_DRV_METHOD pciDrmDevMethodList[] =
@@ -100,7 +100,7 @@ VXB_DRV_DEF(vxbPciDrmDevDrv)
  */
 static STATUS pciDrmDevProbe
     (
-    VXB_DEVICE_ID      vxbDevId
+    VXB_DEV_ID      vxbDevId
     )
     {
     const struct pci_device_id *pciidlist;
@@ -145,7 +145,7 @@ static STATUS pciDrmDevProbe
  */
 static STATUS pciDrmDevAttach
     (
-    VXB_DEVICE_ID      vxbDevId
+    VXB_DEV_ID      vxbDevId
     )
     {
     gfxComp.vxbDevId = vxbDevId;

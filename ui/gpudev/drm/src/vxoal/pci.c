@@ -38,7 +38,7 @@ NOMANUAL
 
 static int globalPciDevsTot = -1;
 struct pci_dev pGlobalPciDevs[MAX_PCI_DEVS];
-VXB_DEVICE_ID pGlobalVxbDevs[MAX_PCI_DEVS];
+VXB_DEV_ID pGlobalVxbDevs[MAX_PCI_DEVS];
 unsigned long pci_mem_start;
 
 /*
@@ -53,7 +53,7 @@ int pci_read_config_byte
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
 
     if (VXB_PCI_CFG_READ(busCtrlID, pPciDev, offset, 1, pData) != OK)
@@ -74,7 +74,7 @@ int pci_read_config_word
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
 
     if (VXB_PCI_CFG_READ(busCtrlID, pPciDev, offset, 2, pData) != OK)
@@ -95,7 +95,7 @@ int pci_read_config_dword
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
 
     if (VXB_PCI_CFG_READ(busCtrlID, pPciDev, offset, 4, pData) != OK)
@@ -116,7 +116,7 @@ int pci_write_config_byte
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
 
     if (VXB_PCI_CFG_WRITE(busCtrlID, pPciDev, offset, 1, data) != OK)
@@ -137,7 +137,7 @@ int pci_write_config_word
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
 
     if (VXB_PCI_CFG_WRITE(busCtrlID, pPciDev, offset, 2, data) != OK)
@@ -158,7 +158,7 @@ int pci_write_config_dword
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
 
     if (VXB_PCI_CFG_WRITE(busCtrlID, pPciDev, offset, 4, data) != OK)
@@ -296,7 +296,7 @@ void __iomem *pci_iomap
 */
 LOCAL STATUS gfxVxbPciExtCapFind
     (
-    VXB_DEVICE_ID     pDev,
+    VXB_DEV_ID     pDev,
     PCI_HARDWARE * hardInfo,
     UINT8          extCapFindId,  /* Extended capabilities ID to search for */
     UINT8 *        pOffset        /* returned config space offset */
@@ -361,7 +361,7 @@ static int pci_is_pcie
     struct pci_dev *dev
     )
     {
-    VXB_DEVICE_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
+    VXB_DEV_ID busCtrlID = vxbDevParent(pGlobalVxbDevs[dev->vxbPos]);
     UINT8 expOffset = 0;
 #if defined(GFX_USE_VXBPCIEXTCAPFIND)
     PCI_HARDWARE * pPciDev = vxbDevIvarsGet(pGlobalVxbDevs[dev->vxbPos]);
@@ -410,7 +410,7 @@ void pci_set_master
 
 void pcidev_add_entry
     (
-    VXB_DEVICE_ID vxbDevId
+    VXB_DEV_ID vxbDevId
     )
     {
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
@@ -489,7 +489,7 @@ void pcidev_add_entry
 
 struct pci_dev *pcidev_find_entry
     (
-    VXB_DEVICE_ID vxbDevId
+    VXB_DEV_ID vxbDevId
     )
     {
     int i;
