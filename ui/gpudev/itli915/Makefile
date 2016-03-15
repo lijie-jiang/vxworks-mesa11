@@ -12,12 +12,26 @@
 # 22jan15,qsn  Port Intel HD graphics driver to VxWorks 7 (US50702)
 # 20nov13,mgc  created (US48907)
 
-include $(WIND_KRNL_MK)/defs.layers.mk
 
-BUILD_TOOLS=$(_WRS_CONFIG_gnu_VERSION)
+TGT_DIR=$(WIND_BASE)/target
 
-BUILD_DIRS = src
-POST_NOBUILD_CFGDIRS = cfg
-POST_NOBUILD_CDFDIRS = cdf
+LIB_BASE_NAME=drm
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+OBJS=
+
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = src
+
+
+
+include $(TGT_DIR)/h/make/rules.library
+

@@ -11,8 +11,21 @@
 # 24feb16,yat  Remove unused include WIND_USR_MK/rules.library.mk (US75033)
 # 16apr15,yat  Add DOC_FILES fbdev.h for fbdev docs fix (V7GFX-245)
 
-DOC_FILES = ../h/fbdev.h
 
-BUILD_DIRS = splash
+TGT_DIR=$(WIND_BASE)/target
 
-include $(WIND_KRNL_MK)/rules.library.mk
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = splash
+
+
+
+include $(TGT_DIR)/h/make/rules.library

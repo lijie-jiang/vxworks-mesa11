@@ -36,6 +36,7 @@ modification history
 */
 
 #if defined(__vxworks)
+#include <vxWorks.h>
 #include <vxoal/krnl/module.h> /* for MODULE_AUTHOR */
 #include <vxoal/krnl/atomic.h> /* for kref */
 #include <vxoal/krnl/idr.h> /* for idr */

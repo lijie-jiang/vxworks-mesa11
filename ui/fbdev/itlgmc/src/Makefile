@@ -12,10 +12,17 @@
 # 11mar15,yat  Add show and FBDEV task support (US55410)
 # 20dec14,qsn  Initial VxWorks 7 release (US48907)
 
-BUILD_DIRS = src
+TGT_DIR=$(WIND_BASE)/target
 
-LIB_BASE_NAME = gfxItlGmcFb
-include $(WIND_KRNL_MK)/defs.library.mk
+LIB_BASE_NAME=gfxItlGmcFb
+
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
+
+DOC_FILES=
+
+EXTRA_INCLUDE=-I$(TGT_DIR)/src/ui/h -I../src
 
 ifdef _WRS_CONFIG_FBDEV_TASK
 EXTRA_DEFINE += -DGFX_USE_FBDEV_TASK
@@ -24,5 +31,8 @@ endif
 OBJS = gfxItlGmcIosDrv.o gfxItlGmc.o
 
 EXTRA_INCLUDE += -I. -I../h
+include $(TGT_DIR)/h/make/rules.library
 
-include $(WIND_KRNL_MK)/rules.library.mk
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers

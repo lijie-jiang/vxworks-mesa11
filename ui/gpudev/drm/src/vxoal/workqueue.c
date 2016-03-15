@@ -30,7 +30,7 @@ NOMANUAL
 
 #include <intLib.h>
 #include <taskLib.h>
-#include <timerDev.h> /* for sysClkRateGet */
+#include <drv/timer/timerDev.h> /* for sysClkRateGet */
 #include <vxoal/krnl/workqueue.h>
 #include <vxoal/krnl/spinlock.h>
 #include <vxoal/krnl/mm.h> /* for kmalloc, kfree */

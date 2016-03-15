@@ -12,8 +12,24 @@
 # 07jan15,yat  Port libDRM to VxWorks 7 (US24705)
 # 20nov13,mgc  created
 
-SHARED_PUBLIC_H_DIRS = h
-BUILD_DIRS = src
-BUILD_USER_DIRS = src
+TGT_DIR=$(WIND_BASE)/target
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+LIB_BASE_NAME=drm
+
+OBJS=
+
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = src
+
+
+
+include $(TGT_DIR)/h/make/rules.library

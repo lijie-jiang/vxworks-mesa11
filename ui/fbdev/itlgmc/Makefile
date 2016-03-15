@@ -11,7 +11,21 @@
 # 20dec14,qsn  Initial VxWorks 7 release (US48907)
 
 BUILD_DIRS = src
-POST_NOBUILD_CFGDIRS = cfg
-POST_NOBUILD_CDFDIRS = cdf
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+TGT_DIR=$(WIND_BASE)/target
+
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = src
+
+
+
+include $(TGT_DIR)/h/make/rules.library

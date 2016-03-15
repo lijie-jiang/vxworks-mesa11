@@ -32,8 +32,7 @@ NOMANUAL
 
 /* includes */
 
-#include <timerLib.h> /* for nanosleep, itimerspec, timer_create, etc */
-#include <clockLib.h> /* for clock_gettime */
+#include <time.h> /* for nanosleep, itimerspec, timer_create, etc */
 #include <sys/time.h> /* for timeval */
 #include <base/b_struct_timespec.h> /* for timespec */
 #include <vxoal/krnl/log.h> /* for pr_err */

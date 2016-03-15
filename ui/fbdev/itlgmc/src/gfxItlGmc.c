@@ -34,7 +34,7 @@ modification history
 #define GFX_KMS_CREATE_DRM_FB
 #define GFX_KMS_DESTROY_DRM_FB
 #include <gfxKmsHelper.inl>
-#include <timerDev.h> /* for sysClkRateGet */
+#include <drv/timer/timerDev.h> /* for sysClkRateGet */
 
 /* forward declarations */
 

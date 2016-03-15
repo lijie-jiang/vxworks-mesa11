@@ -14,8 +14,18 @@
 # 24jan14,mgc  Modified for VxWorks 7 release
 # 25apr13,mgc  create
 
-LIB_BASE_NAME = gfxDrm
-include $(WIND_KRNL_MK)/defs.library.mk
+TGT_DIR=$(WIND_BASE)/target
+
+LIB_BASE_NAME=gfxDrm
+
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
+
+DOC_FILES=
+
+EXTRA_INCLUDE=-I$(TGT_DIR)/src/ui/h 
+
 
 ifdef _WRS_CONFIG_DRM_DEBUG_FLAG
 EXTRA_DEFINE += -DGFX_USE_DEBUG
@@ -33,4 +43,10 @@ endif
 C_SOURCE = $(wildcard *.c)
 OBJS = $(C_SOURCE:.c=.o)
 
-include $(WIND_KRNL_MK)/rules.library.mk
+include $(TGT_DIR)/h/make/rules.library
+
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers
+
+

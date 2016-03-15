@@ -12,4 +12,25 @@
 # 24jan14,mgc  Modified for VxWorks 7 release
 
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+TGT_DIR=$(WIND_BASE)/target
+
+LIB_BASE_NAME=ui
+
+OBJS=
+export _WRS_CONFIG_COMPAT69=y
+export _WRS_CONFIG_VXBUS_LEGACY=y
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = drm itli915 libdrm
+
+
+
+include $(TGT_DIR)/h/make/rules.library

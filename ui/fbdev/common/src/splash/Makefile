@@ -10,8 +10,19 @@
 # --------------------
 # 24jan14,mgc  Modified for VxWorks 7 release
 
-OBJS = gfxSplash.o
 
+TGT_DIR=$(WIND_BASE)/target
 LIB_BASE_NAME = gfxSplash
 
-include $(WIND_KRNL_MK)/rules.library.mk
+DOC_FILES=
+
+EXTRA_INCLUDE=-I$(TGT_DIR)/src/ui/h 
+
+
+OBJS = gfxSplash.o
+
+include $(TGT_DIR)/h/make/rules.library
+
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers

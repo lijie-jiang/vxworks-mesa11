@@ -11,23 +11,26 @@
 # 07jan15,mgc  Port libDRM to VxWorks 7 (US23263)
 # 20nov13,mgc  create
 
+TGT_DIR=$(WIND_BASE)/target
+
+LIB_BASE_NAME=gfxLibDRM
+
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
+
+DOC_FILES=
+
+EXTRA_INCLUDE=-I$(TGT_DIR)/src/ui/h 
+
 EXTRA_INCLUDE += -I../
 EXTRA_DEFINE += -DHAVE_CONFIG_H
 
 C_SOURCE = intel_bufmgr.c intel_bufmgr_fake.c intel_bufmgr_gem.c intel_decode.c mm.c
 OBJS = $(C_SOURCE:.c=.o)
 
-LIB_FORMAT = both
-LIB_BASE_NAME = gfxLibDRM
+include $(TGT_DIR)/h/make/rules.library
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.library.mk 
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
-
-#
-# libdrm is considered 3rd party code
-# all compiler warnings will be suppressed by the following
-#
-CC_WARNINGS = $(CC_WARNINGS_NONE)
+#CC_OPTIM=$(CC_OPTIM_NORMAL) -fno-strict-aliasing -Wno-unused-function -std=gnu9x -w
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers

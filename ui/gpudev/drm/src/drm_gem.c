@@ -53,6 +53,7 @@ modification history
 #include <linux/shmem_fs.h>
 #include <linux/dma-buf.h>
 #else
+#include <vxWorks.h>
 #include <vxoal/krnl/atomic.h> /* for kref */
 #include <vxoal/krnl/shm.h> /* for shmem_file_setup */
 #include <vxoal/krnl/spinlock.h> /* for lockdep_assert_held */

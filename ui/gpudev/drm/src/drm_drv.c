@@ -55,6 +55,7 @@ modification history
 #include "drm_legacy.h"
 #include "drm_internal.h"
 #if defined(__vxworks)
+#include <vxWorks.h>
 #include <vxoal/krnl/types.h> /* for EXPORT_SYMBOL */
 #include <vxoal/krnl/module.h> /* for module_init */
 #include <vxoal/krnl/device.h> /* for device */
