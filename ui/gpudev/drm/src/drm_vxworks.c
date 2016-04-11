@@ -26,7 +26,7 @@ modification history
 #include <vxoal/krnl/list.h> /* for list_for_each_entry_safe */
 #include <drm/drm_vxworks.h> /* for struct drm_vxdev */
 #include <drm/drmP.h> /* for DRM_MINOR_CNT, drm_driver */
-
+#define _WRS_CONFIG_VXBUS_LEGACY
 #if 0
 #define DEBUG_DRM_VXWORKS() pr_err("\n")
 #else
@@ -88,6 +88,8 @@ VXB_DRV vxbPciDrmDevDrv =
 
 VXB_DRV_DEF(vxbPciDrmDevDrv)
 #endif
+
+#if !defined(_WRS_CONFIG_VXBUS_LEGACY)
 
 /*******************************************************************************
  *
@@ -152,6 +154,7 @@ static STATUS pciDrmDevAttach
 
     return OK;
     }
+#endif
 
 /*******************************************************************************
  *
