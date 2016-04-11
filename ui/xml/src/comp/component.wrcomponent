@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wrcomponent:ComponentSet xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:wrcomponent="http:///com/windriver/ide/cfg/wrcomponent/WRComponent.ecore">
+  <components id="webservices-1.7" name="Web Services 1.7" description="Wind River Web Services">
+  </components>
+  <componentLocation component="webservices-1.7">
+
+    <newComponentTemplates id="soap" name="SOAP Component" description="A SOAP component will be added to the project.">
+      <filesToCopy>config/soap.makefile</filesToCopy>
+      <fileSetToCopy destDirectory="webservices">
+        <files>src/soap/stdsoap2.c</files>
+      </fileSetToCopy>
+      <projectTypes href="/project#DKM"/>
+      <projectTypes href="/project#RTP"/>
+      <projectTypes href="/project#SL"/>
+    </newComponentTemplates>
+
+    <newComponentTemplates id="xmlLib" name="XML Library Component" description="A XML library component will be added to the project.">
+      <filesToCopy>config/xml.makefile</filesToCopy>
+      <projectTypes href="/project#DKM"/>
+      <projectTypes href="/project#RTP"/>
+      <projectTypes href="/project#SL"/>
+    </newComponentTemplates>
+
+  </componentLocation>
+</wrcomponent:ComponentSet>

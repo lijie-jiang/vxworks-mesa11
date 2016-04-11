@@ -1,0 +1,50 @@
+<?xml version="1.0" standalone="yes"?>
+
+<!DOCTYPE xmlTutorial
+    PUBLIC "publicAttribute" "systemAttribute"
+[
+    <!ELEMENT note (to,from,header,(message|body))>
+    <!ENTITY extEntity SYSTEM "001.ent">
+    <!NOTATION notePub2 PUBLIC "Public ID" "URI">
+    <!ATTLIST elemName attName4 CDATA #FIXED "elemNameDefault">
+
+]>
+
+
+
+<xmlTutorial>
+    <description> This tutorial demonstrates the use of the XML SAX Parser </description>
+
+    <company name="Wind River Systems, Inc.">
+        <copyright> Copyright 1984-2003 </copyright>
+    </company>
+
+    <author name="David Trinh"/>
+
+    <date day="11"
+	    month="December"
+	    year="2003"/>
+
+    <![CDATA[
+        The XML processor won't apply the rules of formating in this section.
+        ! @ # $ % ^ & * ( ) < > ? ! [ ] / \ . ,
+    ]]>
+
+    <!--
+    This is a comment ! @ # $ % ^ & * ( ) < > ? ! [ ] / \ . ,
+    -->
+
+    &extEntity;
+
+    <?processingInstructionTarget
+        attribute1="value1"
+        attribute2="value2"
+    ?>
+
+    <mySpace:myName xmlns:mySpace="http://www.windriver.com">
+
+    </mySpace:myName>
+
+</xmlTutorial>
+
+

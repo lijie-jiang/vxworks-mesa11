@@ -1,0 +1,7 @@
+#
+config  COMPONENT_XML  
+        bool "Enable XML"     
+        depends on MSP_KERNEL || MSP_RTP
+	default y
+	help
+	    This option enables XML support in the VxWorks kernel.

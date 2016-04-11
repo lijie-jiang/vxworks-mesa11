@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="yes"?>
+
+<xppTutorial> 
+    <description> This tutorial demonstrates the use of the XML Pull Parser </description>
+
+    <company name="Wind River Systems, Inc.">
+        <copyright> Copyright 1984-2003 </copyright>
+    </company>
+
+    <author name="David Trinh"/>
+
+    <date day="11"
+	    month="December"
+	    year="2002"/>
+</xppTutorial>
+
+

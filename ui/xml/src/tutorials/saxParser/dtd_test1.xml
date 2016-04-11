@@ -1,0 +1,41 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE xppTutorial PUBLIC "Public ID" "URI" [
+
+<!ENTITY % intParmEntity "intParmEntity Text">
+<!ENTITY % extParmEntitySys SYSTEM "URI">
+<!ENTITY % extParmEntityPub PUBLIC "Public ID" "URI">
+<!ENTITY intEntity "intEntity Text">
+<!ENTITY extEntitySys SYSTEM "URI">
+<!ENTITY extParmEntitySys SYSTEM "URI" NDATA nName>
+<!ENTITY extEntityPub PUBLIC "Public ID" "URI">
+<!ENTITY extParmEntityPub PUBLIC "Public ID" "URI" NDATA nName>
+
+<!NOTATION noteSys SYSTEM "URI">
+<!NOTATION notePub1 PUBLIC "Public ID">
+<!NOTATION notePub2 PUBLIC "Public ID" "URI">
+
+<!ATTLIST elemName attName1 CDATA #IMPLIED>
+<!ATTLIST elemName attName2 CDATA "elemNameDefault">
+<!ATTLIST elemName attName3 CDATA #REQUIRED>
+<!ATTLIST elemName attName4 CDATA #FIXED "elemNameDefault">
+<!ATTLIST elemName attName5 CDATA #IMPLIED attName6 CDATA #IMPLIED >
+<!ATTLIST payment type (check|cash) "cash">
+
+<!ELEMENT elemName01 ANY>
+<!ELEMENT elemName02 EMPTY>
+<!ELEMENT elemName03 (#PCDATA)>
+<!ELEMENT elemName04 (to)>
+<!ELEMENT elemName05 (to+)>
+<!ELEMENT elemName06 (to*)>
+<!ELEMENT elemName07 (to?)>
+<!ELEMENT elemName08 (to,from,heading,body)>
+<!ELEMENT elemName09 (to|from|heading|body)>
+<!ELEMENT elemName10 (to|from|(heading,body))>
+<!ELEMENT elemName11 (to*,from?,(heading+|body))>
+<!ELEMENT elemName12 (#PCDATA|to|from|header|message)*>
+
+]>
+<xppTutorial>
+</xppTutorial>
+
+

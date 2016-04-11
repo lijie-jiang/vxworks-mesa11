@@ -1,0 +1,19 @@
+# Makefile.mfg
+#
+# modification history
+# --------------------
+# 01b,01jun05,mem  added target redirection
+# 01a,24may05,mem  written.
+#
+# DESCRIPTION
+# This is the top level mfg Makefile for this component.
+#
+
+#include $(WIND_BASE)/config/common/defs-mfg.component
+
+export COMP_WEBSERVICES_PATH	= $(shell pwd)
+
+DOCSUBDIRS	= src/soap \
+		  src/xml
+
+#include $(WIND_BASE)/config/common/rules-mfg.component

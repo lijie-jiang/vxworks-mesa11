@@ -1,0 +1,40 @@
+# defs.docs - makefile fragment for specifying documentation parameters
+#
+# modification history
+# --------------------
+# 01c,05oct05,lll  added component.properties processing
+# 01b,01sep05,pas  version 1.3 for fall release
+# 01a,17jun05,j_c  created
+#
+# DESCRIPTION
+# This file contains settings to configure the documentation build for the
+# Web Services (xml/soap) component.
+# Depends on which Web Services subcomponent (SOAP or XML) is included
+
+include $(WIND_HOME)/setup/make/defs.utils
+include $(WIND_KRNL_MK)/config/defs.version.mk
+
+ifeq ($(KERNEL_MAJOR_VERSION),6)
+
+   _propfile   = $(COMP_WEBSERVICES_PATH)/component.properties
+   _plugin     = $(call Get_PropertyValue,\.wrdoc.plugin,$(_propfile))
+   _apiref     = $(call Get_PropertyValue,\.wrdoc.apiref,$(_propfile))
+   DOC_DIR     = $(DOCS_ROOT)/$(_plugin)/$(_apiref)
+   DOC_BOOK    = $(call Get_PropertyValue,\.wrdoc.apibook,$(_propfile))
+   DOC_CHAPTER = $(call Get_PropertyValue,\.wrdoc.apichapter,$(_propfile))
+
+else
+
+   ifeq ($(XMLSOAP_DOC_SUBCOMPONENT),SOAP)
+      DOC_DIR = $(DOCS_ROOT)/vxworks/ref/soap
+   endif
+   
+   ifeq ($(XMLSOAP_DOC_SUBCOMPONENT),XML)
+      DOC_DIR = $(DOCS_ROOT)/vxworks/ref/xml
+   endif
+   
+   DOC_CHAPTER = $(XMLSOAP_DOC_SUBCOMPONENT)_libraries
+
+endif
+
+DOC_OPTS = $(DOC_OPTS_MAN) -category $(XMLSOAP_DOC_SUBCOMPONENT)

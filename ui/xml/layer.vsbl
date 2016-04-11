@@ -1,0 +1,36 @@
+/* layer.vsbl file for XML layer  */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+14jan16,mze  added RETROFIT (US73137)
+11sep15,yat  update version to 1.0.1.0 for XML user library support (US24710)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+07jan14,rdl  add HELP field, correct formatting 
+11jul13,f_f  Created.
+*/
+
+
+Layer  XML
+    {
+    SYNOPSIS        XML library and examples
+    HELP            This provides the XML library and associated examples.
+    VERSION         1.0.1.0
+    VENDOR          Wind River
+    FEATURE         XML
+    VSB_REQUIRES
+    LAYER_REQUIRES
+    FEATURE_PROVIDES XML_USER_LIB
+    OPTIONAL        YES
+    DEFAULT         NO
+    PARENT
+    DOC_BUILD       YES
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.1.0, FEATURE, XML}
+    }

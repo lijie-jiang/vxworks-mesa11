@@ -1,0 +1,154 @@
+# Makefile - Top-level comp_wn_xmlsoap makefile
+#
+# modification history
+# --------------------
+# 01k,07sep10,mze  do not use TARGET for usr side
+# 01j,22may09,mze  adding VSB logic for usr build
+# 01i,04nov08,mze  only bring in VSB when building kernel
+# 01h,16jul08,pee  VSB
+# 01g,14jul08,mze  adding vsb logic
+# 01f,06jun05,pas  added usr target
+# 01e,01jun05,mem  added target redirection
+# 01d,31may05,tf   Change the condition to build XML/SOAP.
+# 01c,24may05,mem  Add configuration of build
+# 01b,23may05,mem  Define COMP_WEBSERVICES_PATH
+# 01a,23apr05,mem  written.
+#
+# DESCRIPTION
+# This is the top level Makefile for the comp_wn_xmlsoap component
+#
+
+TGT_DIR = $(WIND_BASE)/target
+
+ifeq ($(SPACE),user)
+TMP_USR_BLD := 1
+endif
+
+ifeq ($(SPACE),USER)
+TMP_USR_BLD := 1
+endif
+
+ifndef __DEFS_VSBVARS_MK_INCLUDED
+include $(WIND_BASE)/target/h/make/defs.vsbvars.mk
+endif
+
+ifneq ($(wildcard $(VSB_MAKE_CONFIG_FILE)),)
+include $(VSB_MAKE_CONFIG_FILE)
+endif
+
+ifeq ($(TMP_USR_BLD),)
+# the following is a list of the XML configurations that have booleans associated with them
+
+_VARLIST = \
+ 	COMPONENT_IPNET \
+        COMPONENT_IPLITE \
+	WIND_IPNET \
+	COMPONENT_COREIP \
+	FEATURE_IPNET_VERBOSE \
+	FEATURE_IPNET_GEN_DEPEND \
+	FEATURE_IP_GPP_BUILD \
+	MSP_FEATURE_PAD \
+	MSP_FEATURE_PCD \
+	MSP_FEATURE_PID \
+	MSP_FEATURE_PNE \
+	MSP_FEATURE_VIPER \
+	MSP_KERNEL \
+	MSP_RTP \
+	MSP_BUILD_USER \
+	COMPONENT_XML
+
+
+
+# the following is a list of the XML configurations that have strings associated with them
+
+_STRLIST = \
+        FEATURE_IPNET_BUILD
+
+
+# everything above here done for kernel only
+else
+
+MSP_RTP= true
+export MSP_RTP
+
+COMPONENT_COREIP= true
+export COMPONENT_COREIP
+
+MSP_BUILD_USER= true
+export MSP_BUILD_USER
+
+ifdef _WRS_CONFIG_COMPONENT_USR_XML
+COMPONENT_XML= true
+else
+COMPONENT_XML=false
+endif
+export COMPONENT_XML
+
+endif
+
+define defvars
+
+ifdef _WRS_CONFIG_$1
+$1 = true
+else
+$1 = false
+endif
+export $1
+endef
+
+$(eval $(foreach var,$(_VARLIST),$(call defvars,$(var))))
+
+ifeq ($(FEATURE_SET),)
+
+ifeq ($(MSP_FEATURE_PAD),true)
+export FEATURE_SET = pad
+endif
+
+ifeq ($(MSP_FEATURE_PCD),true)
+export FEATURE_SET = pcd
+endif
+ 
+ifeq ($(MSP_FEATURE_PID),true)
+export FEATURE_SET = pid
+endif
+
+ifeq ($(MSP_FEATURE_PNE),true)
+export FEATURE_SET = pne
+endif
+
+endif 
+
+define defStr
+
+$1 = $(_WRS_CONFIG_$1)
+export $1
+endef
+
+$(eval $(foreach var,$(_STRLIST),$(call defStr,$(var))))
+
+ifeq ($(SPACE),)
+SPACE = kernel
+endif
+ 
+#include $(WIND_BASE)/config/common/defs.component
+-include config.mk
+
+export COMP_WEBSERVICES_PATH	= $(shell pwd)
+
+ifndef _WRS_CONFIG_COMPONENT_XML
+TARGET = rclean
+endif
+
+ifndef _WRS_CONFIG_COMPONENT_USR_XML
+USR_TARGET = rclean
+endif
+
+ifeq ($(SPACE),kernel)
+kernel:
+	$(MAKE) -C src/xml CPU=$(CPU) TOOL=$(TOOL) SPACE=kernel $(TARGET)
+else
+usr:
+	$(MAKE) -C src/xml CPU=$(CPU) TOOL=$(TOOL) SPACE=user $(USR_TARGET)
+endif
+
+#include $(WIND_BASE)/config/common/rules.component

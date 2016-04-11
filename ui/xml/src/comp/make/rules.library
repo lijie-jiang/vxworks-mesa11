@@ -1,0 +1,55 @@
+# rules.library - custom build rules for Web Services
+#
+# modification history
+# --------------------
+# 01e,24aug11,mze  fix for WIND00291978
+# 01d,06jun11,mze  adding VSB logic
+# 01c,12sep07,pas  add SDA_DISABLE to avoid download errors on MIPS and PPC
+# 01b,31may05,pas  get COMP_WEBSERVICES_PATH from wrenv
+# 01a,26apr05,pas  adapted from dcom
+#
+# DESCRIPTION
+# This file contains definitions for building webservices
+# common for all component subdirectories.
+#
+
+WIND_HOME_SLASH      = $(subst \,/,$(WIND_HOME))
+TMP = $(shell sh $(WIND_HOME)/wrenv.sh -o print_path '$$(WIND_COMPONENTS)' $(COMP_WEBSERVICES))
+COMP_WEBSERVICES_PATH_SLASH = $(subst \,/,$(TMP))
+WIND_BASE_SLASH      = $(subst \,/,$(WIND_BASE))
+WIND_USR_SLASH       = $(subst \,/,$(WIND_USR))
+
+WIND_COMP_SLASH = $(WIND_HOME_SLASH)/components
+
+ifeq ($(SPACE),)
+  SPACE = kernel
+endif
+
+ifndef __DEFS_VSBVARS_MK_INCLUDED
+include $(WIND_KRNL_MK)/defs.vsbvars.mk
+endif
+
+ifneq ($(wildcard $(VSB_MAKE_CONFIG_FILE)),)
+include $(VSB_MAKE_CONFIG_FILE)
+endif
+
+ifeq ($(SPACE),kernel)
+  RULES_LIBRARY = $(WIND_BASE_SLASH)/build/mk/krnl/rules.library.mk
+ifeq ($(VSB_DIR),)
+  LIB_ROOT      = $(WIND_COMP_SLASH)/obj/$(WIND_PLATFORM)/krnl/lib
+endif
+  TGT_DIR       = $(WIND_BASE_SLASH)/target
+endif
+
+ifeq ($(SPACE),user)
+   RULES_LIBRARY = $(WIND_BASE_SLASH)/build/mk/usr/rules.library.mk
+ifndef _WRS_CONFIG_FEATURE_USR
+  LIB_ROOT      = $(WIND_COMP_SLASH)/obj/$(WIND_PLATFORM)/usr/lib
+endif
+endif
+
+EXTRA_INCLUDE += -I$(COMP_WEBSERVICES_PATH_SLASH)/h
+
+SDA_DISABLE	= TRUE
+
+include $(RULES_LIBRARY)

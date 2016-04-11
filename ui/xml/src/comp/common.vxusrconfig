@@ -1,0 +1,6 @@
+config COMPONENT_USR_XML
+	bool "Build USR libraries for XML"
+	default y if COMPONENT_XML
+	depends on MSP_KERNEL && FEATURE_USR
+	help
+	    This component will build the user libraries for the XML component
