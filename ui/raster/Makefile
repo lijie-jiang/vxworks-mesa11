@@ -16,6 +16,6 @@ export _WRS_CONFIG_MESA_GPUDEV_DRI_I965=y
 DOC_OPTS = -mg -nostrict -missingok
 
 include $(TGT_DIR)/h/make/defs.library
-SUBDIRS = mesa
+SUBDIRS = mesa mesa_demos
 
 include $(TGT_DIR)/h/make/rules.library

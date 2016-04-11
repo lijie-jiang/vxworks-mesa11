@@ -56,7 +56,7 @@ This program runs the swap demo.
 #define GFX_KMS_GET_CONN_STR
 #define GFX_KMS_FIND_CONN_CRTC
 #define GFX_KMS_FIND_CRTC_FB
-#include <gfxKmsHelper.inl>
+#include "gfxKmsHelper.inl"
 #endif /* GFX_USE_GBM */
 #if defined(GFX_USE_EVDEV)
 #include <evdevLib.h>

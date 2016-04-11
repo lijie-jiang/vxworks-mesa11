@@ -24,7 +24,7 @@ include $(TGT_DIR)/h/make/defs.library
 # the rest of the sub-directories are built after vxbMethodDecl.h is
 # updated if a new VxBus method file is added in the methods directory.
 
-SUBDIRS = drm itli915 libdrm
+SUBDIRS = drm itli915 libdrm libdrm_demos
 
 
 

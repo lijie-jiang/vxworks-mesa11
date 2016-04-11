@@ -18,6 +18,6 @@ export _WRS_CONFIG_VXBUS_LEGACY=y
 DOC_OPTS = -mg -nostrict -missingok
 
 include $(TGT_DIR)/h/make/defs.library
-SUBDIRS = fbdev gpudev raster
+SUBDIRS = fbdev gpudev raster xml
 
 include $(TGT_DIR)/h/make/rules.library

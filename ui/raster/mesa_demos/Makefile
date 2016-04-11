@@ -13,12 +13,20 @@
 # 22dec14,yat  Create demo for Mesa (US24712)
 # 24jan14,mgc  Modified for VxWorks 7 release
 
-include $(WIND_KRNL_MK)/defs.layers.mk
 
-BUILD_TOOLS=$(_WRS_CONFIG_gnu_VERSION)
-BUILD_USER_TOOLS=$(_WRS_CONFIG_gnu_VERSION)
-RTP_TOOLS=$(_WRS_CONFIG_gnu_VERSION)
+TGT_DIR=$(WIND_BASE)/target
 
+
+DOC_OPTS = -mg -nostrict -missingok
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+ 
 ifdef _WRS_CONFIG_MESA_GPUDEV_DRI_I915
 _MESA_DRI=yes
 endif
@@ -26,15 +34,9 @@ ifdef _WRS_CONFIG_MESA_GPUDEV_DRI_I965
 _MESA_DRI=yes
 endif
 
-BUILD_DIRS = main swap fbo gear
+SUBDIRS = main swap fbo gear
 ifdef _MESA_DRI
-BUILD_DIRS += esmain es2swap es2fbo es2gear es2logo es3swap
+SUBDIRS += esmain es2swap es2fbo es2gear es2logo es3swap
 endif
-BUILD_USER_DIRS =
-POSTBUILD_RTP_DIRS = main mainso swap swapso fbo fboso gear gearso
-ifdef _MESA_DRI
-POSTBUILD_RTP_DIRS += esmain esmainso es2swap es2swapso es2fbo es2fboso es2gear es2gearso es2logo es2logoso es3swap es3swapso
-endif
-POST_NOBUILD_CDFDIRS = cdf
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+include $(TGT_DIR)/h/make/rules.library

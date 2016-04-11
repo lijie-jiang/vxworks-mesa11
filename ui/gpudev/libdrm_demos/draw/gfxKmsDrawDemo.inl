@@ -53,7 +53,7 @@ This program provides the KMS draw demonstration program.
 #define GFX_KMS_OPEN_DRM_FB
 #define GFX_KMS_CREATE_DRM_FB
 #define GFX_KMS_MMAP_DRM_FB
-#include <gfxKmsHelper.inl>
+#include "gfxKmsHelper.inl"
 
 #if defined(GFX_USE_EVDEV)
 #include <evdevLib.h>

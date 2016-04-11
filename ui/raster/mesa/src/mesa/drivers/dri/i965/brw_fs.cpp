@@ -4391,7 +4391,7 @@ fs_visitor::dump_instructions()
 {
    dump_instructions(NULL);
 }
-extern unsigned int geteuid();
+extern "C" unsigned int geteuid();
 void
 fs_visitor::dump_instructions(const char *name)
 {

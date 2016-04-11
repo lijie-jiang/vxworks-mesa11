@@ -11,8 +11,22 @@
 # 18jun14,yat  Added main demo for dynamic RTP (US11227)
 # 24jan14,mgc  Modified for VxWorks 7 release
 
-BUILD_DIRS = main draw
-POSTBUILD_RTP_DIRS = main mainso draw
-POST_NOBUILD_CDFDIRS = cdf 
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+
+TGT_DIR=$(WIND_BASE)/target
+
+
+DOC_OPTS = -mg -nostrict -missingok
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = main draw
+
+export _WRS_CONFIG_FBDEV_TASK=1
+
+include $(TGT_DIR)/h/make/rules.library

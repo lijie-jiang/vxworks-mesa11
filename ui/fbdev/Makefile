@@ -25,7 +25,7 @@ include $(TGT_DIR)/h/make/defs.library
 # the rest of the sub-directories are built after vxbMethodDecl.h is
 # updated if a new VxBus method file is added in the methods directory.
 
-SUBDIRS = common itlgmc
+SUBDIRS = common itlgmc demos
 
 export _WRS_CONFIG_FBDEV_TASK=1
 

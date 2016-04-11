@@ -11,14 +11,17 @@
 # 14sep15,yat  Add support for Mesa GPU DRI (US24710)
 # 22dec14,yat  Create OpenGL ES demo for Mesa (US24712)
 
-ifeq ($(SPACE), user)
-EXE = gfxMesaEs2LogoDemo.vxe
-ADDED_LIBS += -lgfxMesaEGL -lgfxMesaGL -lgfxMesa -lgfxMesaSw -lxml
-include $(WIND_USR_MK)/defs.library.mk
-else
+TGT_DIR=$(WIND_BASE)/target
+
 LIB_BASE_NAME = gfxMesaDemos
-include $(WIND_KRNL_MK)/defs.library.mk
-endif
+
+# Including defs.library to see if _WRS_CONFIG_SMP is defined.
+# It must be after LIB_BASE_NAME
+include $(TGT_DIR)/h/make/defs.library
+
+DOC_FILES=
+
+EXTRA_INCLUDE=-I$(TGT_DIR)/src/ui/h -I$(TGT_DIR)/src/ui/raster/mesa/h
 
 EXTRA_DEFINE += -D_MESA
 ifdef _WRS_CONFIG_MESA_MANGLE
@@ -55,8 +58,8 @@ C_SOURCE = gfxMesaEs2LogoDemo.c
 
 OBJS = $(C_SOURCE:.c=.o)
 
-ifeq ($(SPACE), user)
-include $(WIND_USR_MK)/rules.rtp.mk
-else
-include $(WIND_KRNL_MK)/rules.library.mk
-endif
+#EXTRA_INCLUDE += -I. -I../h
+include $(TGT_DIR)/h/make/rules.library
+
+CC_OPTIM= -w
+include  $(TGT_DIR)/h/make/defs.drivers
