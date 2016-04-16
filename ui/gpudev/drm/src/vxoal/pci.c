@@ -58,6 +58,9 @@ int pci_read_config_byte
 
     if (VXB_PCI_CFG_READ(busCtrlID, pPciDev, offset, 1, pData) != OK)
         return -1;
+#else
+    if (VXB_PCI_BUS_CFG_READ (pGlobalVxbDevs[dev->vxbPos], offset, 1, *pData)!=OK)
+         return -1;
 #endif
     return 0;
     }
@@ -79,6 +82,10 @@ int pci_read_config_word
 
     if (VXB_PCI_CFG_READ(busCtrlID, pPciDev, offset, 2, pData) != OK)
         return -1;
+#else
+   
+   if (VXB_PCI_BUS_CFG_READ (pGlobalVxbDevs[dev->vxbPos], offset, 2, *pData)!=OK)
+         return -1;
 #endif
     return 0;
     }
@@ -100,6 +107,9 @@ int pci_read_config_dword
 
     if (VXB_PCI_CFG_READ(busCtrlID, pPciDev, offset, 4, pData) != OK)
         return -1;
+#else
+   if (VXB_PCI_BUS_CFG_READ (pGlobalVxbDevs[dev->vxbPos], offset, 4, *pData)!=OK)
+         return -1;
 #endif
     return 0;
     }
@@ -121,6 +131,11 @@ int pci_write_config_byte
 
     if (VXB_PCI_CFG_WRITE(busCtrlID, pPciDev, offset, 1, data) != OK)
         return -1;
+#else
+   if (VXB_PCI_BUS_CFG_WRITE (pGlobalVxbDevs[dev->vxbPos], offset, 1, data)!=OK)
+			 return -1;
+
+ 
 #endif
     return 0;
     }
@@ -142,6 +157,9 @@ int pci_write_config_word
 
     if (VXB_PCI_CFG_WRITE(busCtrlID, pPciDev, offset, 2, data) != OK)
         return -1;
+#else
+    if (VXB_PCI_BUS_CFG_WRITE (pGlobalVxbDevs[dev->vxbPos], offset, 2, data)!=OK)
+			 return -1;
 #endif
     return 0;
     }
@@ -163,6 +181,10 @@ int pci_write_config_dword
 
     if (VXB_PCI_CFG_WRITE(busCtrlID, pPciDev, offset, 4, data) != OK)
         return -1;
+#else
+if (VXB_PCI_BUS_CFG_WRITE (pGlobalVxbDevs[dev->vxbPos], offset, 4, data)!=OK)
+			return -1;
+
 #endif
     return 0;
     }
@@ -478,6 +500,88 @@ void pcidev_add_entry
             }
         }
 
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_DEV_INT_LINE,
+                         1, dev->irq);
+
+    dev->vxbPos = globalPciDevsTot;
+
+    globalPciDevsTot++;
+#else
+    
+    struct pci_dev *dev;
+    UINT16 i;
+    struct vxbPciDevice *   pPciDev = (struct vxbPciDevice *)vxbDevId->pBusSpecificDevInfo;
+    DEBUG_PCI("\n");
+
+    if (vxbDevId == NULL)
+        return;
+
+    if (globalPciDevsTot < 0)
+        {
+        memset (pGlobalPciDevs, 0, sizeof (pGlobalPciDevs));
+        memset (pGlobalVxbDevs, 0, sizeof (pGlobalVxbDevs));
+        pci_mem_start = ULONG_MAX;
+        globalPciDevsTot = 0;
+        }
+
+    dev = &(pGlobalPciDevs[globalPciDevsTot]);
+    dev->bus = (struct pci_bus *)kcalloc (1, sizeof (struct pci_bus), GFP_KERNEL);
+    if (dev->bus == (struct pci_bus *)NULL) return;
+
+    pGlobalVxbDevs[globalPciDevsTot] = vxbDevId;
+
+    dev->bus->number = pPciDev->pciBus;
+    dev->devfn = ((pPciDev->pciDev & 0x1f) << 3 |
+                  (pPciDev->pciFunc & 0x7));
+
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_VENDOR_ID,
+                         2, dev->vendor);
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_DEVICE_ID,
+                         2, dev->device);
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_SUB_VENDER_ID,
+                         2, dev->subsystem_vendor);
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_SUB_SYSTEM_ID,
+                         2, dev->subsystem_device);
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_REVISION,
+                         4, dev->class);
+    dev->class = (dev->class & 0xFFFFFF00) >> 8;
+    VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_REVISION,
+                         1, dev->revision);
+
+     /*for (i = 0; i < VXB_MAXBARS; i++)
+        {
+        if (pInst->regBaseFlags[i] == VXB_REG_MEM)
+            printf("membar %d = 0x%x\n",i,pInst->pRegBase[i]);
+		if (pInst->regBaseFlags[i] == VXB_REG_IO)
+            printf("IObar %d = 0x%x\n",i,pInst->pRegBase[i]);
+        }*/
+    for (i = 0; i < 6; i++)
+        {
+        /*
+         * Check for a memory-mapped BAR at this index first,
+         * and if there isn't one, check for an I/O space
+         * BAR next.
+         */
+          void *		drmHandle;
+        if (vxbDevId->regBaseFlags[i] == VXB_REG_MEM)
+            {
+            
+			vxbRegMap (vxbDevId, i, &drmHandle);            
+            dev->resource[i].start = (resource_size_t)vxbDevId->pRegBase[i];
+            dev->resource[i].end = (resource_size_t)(vxbDevId->pRegBase[i] + vxbDevId->regBaseSize[i] - 1);
+            if (dev->resource[i].start < pci_mem_start)
+                pci_mem_start = dev->resource[i].start;
+            }
+		 else if (vxbDevId->regBaseFlags[i] == VXB_REG_IO)
+		 	 {
+            vxbRegMap (vxbDevId, i, &drmHandle); 
+            dev->resource[i].start = (resource_size_t)vxbDevId->pRegBase[i];
+            dev->resource[i].end = (resource_size_t)(vxbDevId->pRegBase[i] + vxbDevId->regBaseSize[i] - 1);
+            if (dev->resource[i].start < pci_mem_start)
+                pci_mem_start = dev->resource[i].start;
+            }
+        }
+ 
     VXB_PCI_BUS_CFG_READ(vxbDevId, PCI_CFG_DEV_INT_LINE,
                          1, dev->irq);
 
