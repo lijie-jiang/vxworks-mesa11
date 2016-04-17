@@ -391,6 +391,14 @@ static int pci_is_pcie
 #else
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
     (void) vxbPciExtCapFind (busCtrlID, PCI_EXT_CAP_EXP, &expOffset);
+else
+	 struct vxbPciDevice *pPciDevice = pGlobalVxbDevs[dev->vxbPos]->pBusSpecificDevInfo;
+	 vxbPciConfigExtCapFind (vxbDevParent(pGlobalVxbDevs[dev->vxbPos]), PCI_EXT_CAP_EXP,
+			pPciDevice->pciBus,
+			pPciDevice->pciDev,
+			pPciDevice->pciFunc,
+			&expOffset);
+
 #endif
 #endif /* GFX_USE_VXBPCIEXTCAPFIND */
     DEBUG_PCI("%d\n", expOffset);
