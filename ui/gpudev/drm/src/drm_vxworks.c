@@ -62,9 +62,12 @@ static GFX_COMP gfxComp =
    };
 
 static int drmDrvNum = ERROR;
-
+#if !defined(_WRS_CONFIG_VXBUS_LEGACY)
 static STATUS pciDrmDevProbe (VXB_DEV_ID);
 static STATUS pciDrmDevAttach (VXB_DEV_ID);
+#else
+LOCAL BOOL pciDrmDevProbe (VXB_DEV_ID);
+#endif
 
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
 static VXB_DRV_METHOD pciDrmDevMethodList[] =
@@ -93,325 +96,13 @@ LOCAL struct vxbDeviceMethod drmMethods[] =
    { 0, 0 }
    };
 
-#define INTEL_VGA_DEVICE(id)  {id, 0x8086}
-
-
-#define INTEL_I830_IDS				\
-	INTEL_VGA_DEVICE(0x3577)
-
-#define INTEL_I845G_IDS				\
-	INTEL_VGA_DEVICE(0x2562)
-
-#define INTEL_I85X_IDS				\
-	INTEL_VGA_DEVICE(0x3582), /* I855_GM */ \
-	INTEL_VGA_DEVICE(0x358e)
-
-#define INTEL_I865G_IDS				\
-	INTEL_VGA_DEVICE(0x2572) /* I865_G */
-
-#define INTEL_I915G_IDS				\
-	INTEL_VGA_DEVICE(0x2582), /* I915_G */ \
-	INTEL_VGA_DEVICE(0x258a)  /* E7221_G */
-
-#define INTEL_I915GM_IDS				\
-	INTEL_VGA_DEVICE(0x2592) /* I915_GM */
-
-#define INTEL_I945G_IDS				\
-	INTEL_VGA_DEVICE(0x2772) /* I945_G */
-
-#define INTEL_I945GM_IDS				\
-	INTEL_VGA_DEVICE(0x27a2), /* I945_GM */ \
-	INTEL_VGA_DEVICE(0x27ae)  /* I945_GME */
-
-#define INTEL_I965G_IDS				\
-	INTEL_VGA_DEVICE(0x2972), /* I946_GZ */	\
-	INTEL_VGA_DEVICE(0x2982),	/* G35_G */	\
-	INTEL_VGA_DEVICE(0x2992),	/* I965_Q */	\
-	INTEL_VGA_DEVICE(0x29a2)	/* I965_G */
-
-#define INTEL_G33_IDS				\
-	INTEL_VGA_DEVICE(0x29b2), /* Q35_G */ \
-	INTEL_VGA_DEVICE(0x29c2),	/* G33_G */ \
-	INTEL_VGA_DEVICE(0x29d2)	/* Q33_G */
-
-#define INTEL_I965GM_IDS				\
-	INTEL_VGA_DEVICE(0x2a02),	/* I965_GM */ \
-	INTEL_VGA_DEVICE(0x2a12)  /* I965_GME */
-
-#define INTEL_GM45_IDS				\
-	INTEL_VGA_DEVICE(0x2a42) /* GM45_G */
-
-#define INTEL_G45_IDS				\
-	INTEL_VGA_DEVICE(0x2e02), /* IGD_E_G */ \
-	INTEL_VGA_DEVICE(0x2e12), /* Q45_G */ \
-	INTEL_VGA_DEVICE(0x2e22), /* G45_G */ \
-	INTEL_VGA_DEVICE(0x2e32), /* G41_G */ \
-	INTEL_VGA_DEVICE(0x2e42), /* B43_G */ \
-	INTEL_VGA_DEVICE(0x2e92)	/* B43_G.1 */
-
-#define INTEL_PINEVIEW_IDS			\
-	INTEL_VGA_DEVICE(0xa001),			\
-	INTEL_VGA_DEVICE(0xa011)
-
-#define INTEL_IRONLAKE_D_IDS \
-	INTEL_VGA_DEVICE(0x0042)
-
-#define INTEL_IRONLAKE_M_IDS \
-	INTEL_VGA_DEVICE(0x0046)
-
-#define INTEL_SNB_D_IDS \
-	INTEL_VGA_DEVICE(0x0102), \
-	INTEL_VGA_DEVICE(0x0112), \
-	INTEL_VGA_DEVICE(0x0122), \
-	INTEL_VGA_DEVICE(0x010A)
-
-#define INTEL_SNB_M_IDS \
-	INTEL_VGA_DEVICE(0x0106), \
-	INTEL_VGA_DEVICE(0x0116), \
-	INTEL_VGA_DEVICE(0x0126)
-
-#define INTEL_IVB_M_IDS \
-	INTEL_VGA_DEVICE(0x0156), /* GT1 mobile */ \
-	INTEL_VGA_DEVICE(0x0166)  /* GT2 mobile */
-
-#define INTEL_IVB_D_IDS \
-	INTEL_VGA_DEVICE(0x0152), /* GT1 desktop */ \
-	INTEL_VGA_DEVICE(0x0162), /* GT2 desktop */ \
-	INTEL_VGA_DEVICE(0x015a), /* GT1 server */ \
-	INTEL_VGA_DEVICE(0x016a)  /* GT2 server */
-
-#if 0
-#define INTEL_IVB_Q_IDS \
-	INTEL_QUANTA_VGA_DEVICE /* Quanta transcode */
-#endif
-#define INTEL_HSW_D_IDS \
-	INTEL_VGA_DEVICE(0x0402), /* GT1 desktop */ \
-	INTEL_VGA_DEVICE(0x0412), /* GT2 desktop */ \
-	INTEL_VGA_DEVICE(0x0422), /* GT3 desktop */ \
-	INTEL_VGA_DEVICE(0x040a), /* GT1 server */ \
-	INTEL_VGA_DEVICE(0x041a), /* GT2 server */ \
-	INTEL_VGA_DEVICE(0x042a), /* GT3 server */ \
-	INTEL_VGA_DEVICE(0x040B), /* GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x041B), /* GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x042B), /* GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x040E), /* GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x041E), /* GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x042E), /* GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x0C02), /* SDV GT1 desktop */ \
-	INTEL_VGA_DEVICE(0x0C12), /* SDV GT2 desktop */ \
-	INTEL_VGA_DEVICE(0x0C22), /* SDV GT3 desktop */ \
-	INTEL_VGA_DEVICE(0x0C0A), /* SDV GT1 server */ \
-	INTEL_VGA_DEVICE(0x0C1A), /* SDV GT2 server */ \
-	INTEL_VGA_DEVICE(0x0C2A), /* SDV GT3 server */ \
-	INTEL_VGA_DEVICE(0x0C0B), /* SDV GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x0C1B), /* SDV GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x0C2B), /* SDV GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x0C0E), /* SDV GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x0C1E), /* SDV GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x0C2E), /* SDV GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x0A02), /* ULT GT1 desktop */ \
-	INTEL_VGA_DEVICE(0x0A12), /* ULT GT2 desktop */ \
-	INTEL_VGA_DEVICE(0x0A22), /* ULT GT3 desktop */ \
-	INTEL_VGA_DEVICE(0x0A0A), /* ULT GT1 server */ \
-	INTEL_VGA_DEVICE(0x0A1A), /* ULT GT2 server */ \
-	INTEL_VGA_DEVICE(0x0A2A), /* ULT GT3 server */ \
-	INTEL_VGA_DEVICE(0x0A0B), /* ULT GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x0A1B), /* ULT GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x0A2B), /* ULT GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x0D02), /* CRW GT1 desktop */ \
-	INTEL_VGA_DEVICE(0x0D12), /* CRW GT2 desktop */ \
-	INTEL_VGA_DEVICE(0x0D22), /* CRW GT3 desktop */ \
-	INTEL_VGA_DEVICE(0x0D0A), /* CRW GT1 server */ \
-	INTEL_VGA_DEVICE(0x0D1A), /* CRW GT2 server */ \
-	INTEL_VGA_DEVICE(0x0D2A), /* CRW GT3 server */ \
-	INTEL_VGA_DEVICE(0x0D0B), /* CRW GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x0D1B), /* CRW GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x0D2B), /* CRW GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x0D0E), /* CRW GT1 reserved */ \
-	INTEL_VGA_DEVICE(0x0D1E), /* CRW GT2 reserved */ \
-	INTEL_VGA_DEVICE(0x0D2E)  /* CRW GT3 reserved */ \
-
-#define INTEL_HSW_M_IDS \
-	INTEL_VGA_DEVICE(0x0406), /* GT1 mobile */ \
-	INTEL_VGA_DEVICE(0x0416), /* GT2 mobile */ \
-	INTEL_VGA_DEVICE(0x0426), /* GT2 mobile */ \
-	INTEL_VGA_DEVICE(0x0C06), /* SDV GT1 mobile */ \
-	INTEL_VGA_DEVICE(0x0C16), /* SDV GT2 mobile */ \
-	INTEL_VGA_DEVICE(0x0C26), /* SDV GT3 mobile */ \
-	INTEL_VGA_DEVICE(0x0A06), /* ULT GT1 mobile */ \
-	INTEL_VGA_DEVICE(0x0A16), /* ULT GT2 mobile */ \
-	INTEL_VGA_DEVICE(0x0A26), /* ULT GT3 mobile */ \
-	INTEL_VGA_DEVICE(0x0A0E), /* ULX GT1 mobile */ \
-	INTEL_VGA_DEVICE(0x0A1E), /* ULX GT2 mobile */ \
-	INTEL_VGA_DEVICE(0x0A2E), /* ULT GT3 reserved */ \
-	INTEL_VGA_DEVICE(0x0D06), /* CRW GT1 mobile */ \
-	INTEL_VGA_DEVICE(0x0D16), /* CRW GT2 mobile */ \
-	INTEL_VGA_DEVICE(0x0D26)  /* CRW GT3 mobile */
-
-#define INTEL_VLV_M_IDS \
-	INTEL_VGA_DEVICE(0x0f30), \
-	INTEL_VGA_DEVICE(0x0f31), \
-	INTEL_VGA_DEVICE(0x0f32), \
-	INTEL_VGA_DEVICE(0x0f33), \
-	INTEL_VGA_DEVICE(0x0157)
-
-#define INTEL_VLV_D_IDS \
-	INTEL_VGA_DEVICE(0x0155)
-
-#define INTEL_BDW_GT12M_IDS  \
-	INTEL_VGA_DEVICE(0x1602), /* GT1 ULT */ \
-	INTEL_VGA_DEVICE(0x1606), /* GT1 ULT */ \
-	INTEL_VGA_DEVICE(0x160B), /* GT1 Iris */ \
-	INTEL_VGA_DEVICE(0x160E), /* GT1 ULX */ \
-	INTEL_VGA_DEVICE(0x1612), /* GT2 Halo */ \
-	INTEL_VGA_DEVICE(0x1616), /* GT2 ULT */ \
-	INTEL_VGA_DEVICE(0x161B), /* GT2 ULT */ \
-	INTEL_VGA_DEVICE(0x161E)  /* GT2 ULX */
-
-#define INTEL_BDW_GT12D_IDS \
-	INTEL_VGA_DEVICE(0x160A), /* GT1 Server */ \
-	INTEL_VGA_DEVICE(0x160D), /* GT1 Workstation */ \
-	INTEL_VGA_DEVICE(0x161A), /* GT2 Server */ \
-	INTEL_VGA_DEVICE(0x161D)  /* GT2 Workstation */
-
-#define INTEL_BDW_GT3M_IDS \
-	INTEL_VGA_DEVICE(0x1622), /* ULT */ \
-	INTEL_VGA_DEVICE(0x1626), /* ULT */ \
-	INTEL_VGA_DEVICE(0x162B), /* Iris */ \
-	INTEL_VGA_DEVICE(0x162E)  /* ULX */
-
-#define INTEL_BDW_GT3D_IDS \
-	INTEL_VGA_DEVICE(0x162A), /* Server */ \
-	INTEL_VGA_DEVICE(0x162D)  /* Workstation */
-
-#define INTEL_BDW_RSVDM_IDS \
-	INTEL_VGA_DEVICE(0x1632), /* ULT */ \
-	INTEL_VGA_DEVICE(0x1636), /* ULT */ \
-	INTEL_VGA_DEVICE(0x163B), /* Iris */ \
-	INTEL_VGA_DEVICE(0x163E)  /* ULX */
-
-#define INTEL_BDW_RSVDD_IDS \
-	INTEL_VGA_DEVICE(0x163A), /* Server */ \
-	INTEL_VGA_DEVICE(0x163D)  /* Workstation */
-
-#define INTEL_BDW_M_IDS \
-	INTEL_BDW_GT12M_IDS, \
-	INTEL_BDW_GT3M_IDS, \
-	INTEL_BDW_RSVDM_IDS
-
-#define INTEL_BDW_D_IDS \
-	INTEL_BDW_GT12D_IDS, \
-	INTEL_BDW_GT3D_IDS, \
-	INTEL_BDW_RSVDD_IDS
-
-#define INTEL_CHV_IDS \
-	INTEL_VGA_DEVICE(0x22b0), \
-	INTEL_VGA_DEVICE(0x22b1), \
-	INTEL_VGA_DEVICE(0x22b2), \
-	INTEL_VGA_DEVICE(0x22b3)
-
-#define INTEL_SKL_GT1_IDS	\
-	INTEL_VGA_DEVICE(0x1906), /* ULT GT1 */ \
-	INTEL_VGA_DEVICE(0x190E), /* ULX GT1 */ \
-	INTEL_VGA_DEVICE(0x1902), /* DT  GT1 */ \
-	INTEL_VGA_DEVICE(0x190B), /* Halo GT1 */ \
-	INTEL_VGA_DEVICE(0x190A) /* SRV GT1 */
-
-#define INTEL_SKL_GT2_IDS	\
-	INTEL_VGA_DEVICE(0x1916), /* ULT GT2 */ \
-	INTEL_VGA_DEVICE(0x1921), /* ULT GT2F */ \
-	INTEL_VGA_DEVICE(0x191E), /* ULX GT2 */ \
-	INTEL_VGA_DEVICE(0x1912), /* DT  GT2 */ \
-	INTEL_VGA_DEVICE(0x191B), /* Halo GT2 */ \
-	INTEL_VGA_DEVICE(0x191A), /* SRV GT2 */ \
-	INTEL_VGA_DEVICE(0x191D)  /* WKS GT2 */
-
-#define INTEL_SKL_GT3_IDS \
-	INTEL_VGA_DEVICE(0x1926), /* ULT GT3 */ \
-	INTEL_VGA_DEVICE(0x192B), /* Halo GT3 */ \
-	INTEL_VGA_DEVICE(0x192A) /* SRV GT3 */ \
-
-#define INTEL_SKL_IDS \
-	INTEL_SKL_GT1_IDS, \
-	INTEL_SKL_GT2_IDS, \
-	INTEL_SKL_GT3_IDS
-
-#define INTEL_BXT_IDS \
-	INTEL_VGA_DEVICE(0x0A84), \
-	INTEL_VGA_DEVICE(0x1A84), \
-	INTEL_VGA_DEVICE(0x5A84)
-
-#if 0
-#define INTEL_PCI_IDS \
-	INTEL_I830_IDS,	\
-	INTEL_I845G_IDS,	\
-	INTEL_I85X_IDS,	\
-	INTEL_I865G_IDS,	\
-	INTEL_I915G_IDS,	\
-	INTEL_I915GM_IDS,	\
-	INTEL_I945G_IDS,	\
-	INTEL_I945GM_IDS,	\
-	INTEL_I965G_IDS,	\
-	INTEL_G33_IDS,		\
-	INTEL_I965GM_IDS,	\
-	INTEL_GM45_IDS, 	\
-	INTEL_G45_IDS, 	\
-	INTEL_PINEVIEW_IDS,	\
-	INTEL_IRONLAKE_D_IDS,	\
-	INTEL_IRONLAKE_M_IDS,	\
-	INTEL_SNB_D_IDS,	\
-	INTEL_SNB_M_IDS,	\
-	INTEL_IVB_Q_IDS, /* must be first IVB */ \
-	INTEL_IVB_M_IDS,	\
-	INTEL_IVB_D_IDS,	\
-	INTEL_HSW_D_IDS, \
-	INTEL_HSW_M_IDS, \
-	INTEL_VLV_M_IDS,	\
-	INTEL_VLV_D_IDS,	\
-	INTEL_BDW_GT12M_IDS,	\
-	INTEL_BDW_GT12D_IDS,	\
-	INTEL_BDW_GT3M_IDS,	\
-	INTEL_BDW_GT3D_IDS, \
-	INTEL_CHV_IDS,	\
-	INTEL_SKL_GT1_IDS,	\
-	INTEL_SKL_GT2_IDS,	\
-	INTEL_SKL_GT3_IDS,	\
-	INTEL_BXT_IDS
-#else
-#define INTEL_PCI_IDS \
-	INTEL_PINEVIEW_IDS,	\
-	INTEL_IRONLAKE_D_IDS,	\
-	INTEL_IRONLAKE_M_IDS,	\
-	INTEL_SNB_D_IDS,	\
-	INTEL_SNB_M_IDS,	\
-	INTEL_IVB_M_IDS,	\
-	INTEL_IVB_D_IDS,	\
-	INTEL_HSW_D_IDS, \
-	INTEL_HSW_M_IDS, \
-	INTEL_VLV_M_IDS,	\
-	INTEL_VLV_D_IDS,	\
-	INTEL_BDW_GT12M_IDS,	\
-	INTEL_BDW_GT12D_IDS,	\
-	INTEL_BDW_GT3M_IDS,	\
-	INTEL_BDW_GT3D_IDS, \
-	INTEL_CHV_IDS,	\
-	INTEL_SKL_GT1_IDS,	\
-	INTEL_SKL_GT2_IDS,	\
-	INTEL_SKL_GT3_IDS,	\
-	INTEL_BXT_IDS
-
-#endif
 LOCAL void drmInstInit (VXB_DEVICE_ID);
 LOCAL void drmInstInit2 (VXB_DEVICE_ID);
 LOCAL void drmInstConnect (VXB_DEVICE_ID);
 
 LOCAL struct vxbPciID drmPciDevIDList[] =
-    {
-        /* { devID, vendID } 
-
-        { INTEL_DEVICEID_82543GC_COPPER, INTEL_VENDORID },
-        { INTEL_DEVICEID_82543GC_FIBER, INTEL_VENDORID },*/  
-        INTEL_PCI_IDS
+    {   
+		{ 0xFFFF, 0xFFFF }
     };
 
 LOCAL struct drvBusFuncs drmFuncs =
@@ -431,7 +122,7 @@ LOCAL struct vxbPciRegister DrmiDevPciRegistration =
         "pciDrmDev",		/* drvName */
         &drmFuncs,		/* pDrvBusFuncs */
         drmMethods,		/* pMethods */
-        NULL,			/* devProbe */
+        pciDrmDevProbe,			/* devProbe */
         NULL	/* pParamDefaults */
         },
     NELEMENTS(drmPciDevIDList),
@@ -499,25 +190,10 @@ LOCAL void drmInstInit2
         }
 	  if (i == VXB_MAXBARS)
         return;
-	  for (i = 0; i < VXB_MAXBARS; i++)
-        {
-        if (pInst->regBaseFlags[i] == VXB_REG_IO)
-            break;
-        }
-	  for (i = 0; i < VXB_MAXBARS; i++)
-        {
-        if (pInst->regBaseFlags[i] == VXB_REG_MEM)
-            printf("membar %d = 0x%x size = 0x%x\n",i,pInst->pRegBase[i],pInst->regBaseSize[i]);
-		if (pInst->regBaseFlags[i] == VXB_REG_IO)
-            printf("IObar %d = 0x%x size = 0x%x\n",i,pInst->pRegBase[i],pInst->regBaseSize[i]);
-        }
-	  
+	
+	    
 	 gfxComp.vxbDevId = pInst;
-  /*
-    pDrvCtrl->regBase = pInst->pRegBase[i];
-    vxbRegMap (pInst, i, &pDrvCtrl->regHandle);
-
-  */
+ 
     return;
     }
 
@@ -537,7 +213,7 @@ LOCAL void drmInstConnect
     VXB_DEVICE_ID pInst
     )
     {
- 
+	pcidev_add_entry (pInst);
     return;
     }
 
@@ -609,6 +285,44 @@ static STATUS pciDrmDevAttach
 
     return OK;
     }
+#else
+LOCAL BOOL pciDrmDevProbe
+    (
+    VXB_DEVICE_ID pDev
+    )
+    {
+    UINT16 devId = 0;
+    UINT16 vendorId = 0;
+    UINT32 classValue = 0;
+    const struct pci_device_id *pciidlist;
+    VXB_PCI_BUS_CFG_READ (pDev, PCI_CFG_VENDOR_ID, 2, vendorId);
+    VXB_PCI_BUS_CFG_READ (pDev, PCI_CFG_DEVICE_ID, 2, devId);
+    VXB_PCI_BUS_CFG_READ (pDev, PCI_CFG_REVISION, 4, classValue);
+
+    /*AMD*/
+    if (pDev == NULL)
+        return ERROR;
+
+    pciidlist = gfxDrmDevPciList();
+    if (pciidlist == NULL)
+        return ERROR;
+
+    pcidev_add_entry (pDev);
+
+    while ((pciidlist->vendor != 0) &&
+           (pciidlist->device != 0))
+        {
+        if ((pciidlist->vendor == vendorId) &&
+            (pciidlist->device == devId))
+            {
+            pr_info("PCI device found: pciVendId=0x%x, pciDevId=0x%x\n", vendorId, devId);
+            return TRUE;
+            }
+        pciidlist++;
+        }
+      return (FALSE);
+    }
+
 #endif
 
 /*******************************************************************************
@@ -902,7 +616,7 @@ int pci_register_driver
     if (pci_driver->probe (pci_dev, &(pci_driver->id_table[cnt])) != 0) return ERROR;
 #else
    {
-    unsigned int vendor, device;
+    unsigned short vendor, device;
     VXB_PCI_BUS_CFG_READ (gfxComp.vxbDevId, PCI_CFG_VENDOR_ID, 2, vendor);
     VXB_PCI_BUS_CFG_READ (gfxComp.vxbDevId, PCI_CFG_DEVICE_ID, 2, device);
     cnt = 0;
@@ -910,6 +624,7 @@ int pci_register_driver
            (pci_driver->id_table[cnt].device != device))
         cnt++;
  }
+    
     pci_dev = pcidev_find_entry(gfxComp.vxbDevId);
     if (pci_dev == NULL) return ERROR;
 

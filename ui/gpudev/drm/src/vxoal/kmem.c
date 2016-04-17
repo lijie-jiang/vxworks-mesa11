@@ -401,7 +401,7 @@ static void *map_mmap
             return NULL;
             }
 #else
-        virtAddr = (VIRT_ADDR)addr;
+        virtAddr = (VIRT_ADDR)physAddr;
 #endif
         }
 
