@@ -39,6 +39,7 @@ NOMANUAL
 static int globalPciDevsTot = -1;
 struct pci_dev pGlobalPciDevs[MAX_PCI_DEVS];
 VXB_DEV_ID pGlobalVxbDevs[MAX_PCI_DEVS];
+static struct pci_bus pGpciBus[MAX_PCI_DEVS];
 unsigned long pci_mem_start;
 
 /*
@@ -459,6 +460,7 @@ void pcidev_add_entry
         {
         memset (pGlobalPciDevs, 0, sizeof (pGlobalPciDevs));
         memset (pGlobalVxbDevs, 0, sizeof (pGlobalVxbDevs));
+		memset (pGpciBus, 0, sizeof (pGpciBus));	
         pci_mem_start = ULONG_MAX;
         globalPciDevsTot = 0;
         }
@@ -533,7 +535,11 @@ void pcidev_add_entry
         }
 
     dev = &(pGlobalPciDevs[globalPciDevsTot]);
+	#if 0
     dev->bus = (struct pci_bus *)kcalloc (1, sizeof (struct pci_bus), GFP_KERNEL);
+	#else
+	dev->bus = (struct pci_bus *)&pGpciBus[globalPciDevsTot];
+	#endif
     if (dev->bus == (struct pci_bus *)NULL) return;
 
     pGlobalVxbDevs[globalPciDevsTot] = vxbDevId;

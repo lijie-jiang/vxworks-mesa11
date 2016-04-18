@@ -121,12 +121,11 @@ LOCAL struct vxbPciRegister DrmiDevPciRegistration =
         VXB_VER_5_0_0,  	/* vxbVersion */
         "pciDrmDev",		/* drvName */
         &drmFuncs,		/* pDrvBusFuncs */
-        drmMethods,		/* pMethods */
+        NULL,		/* pMethods */
         pciDrmDevProbe,			/* devProbe */
-        NULL	/* pParamDefaults */
         },
     NELEMENTS(drmPciDevIDList),
-    drmPciDevIDList
+    &drmPciDevIDList[0],
     };
 /*******************************************************************************
 *
@@ -213,7 +212,7 @@ LOCAL void drmInstConnect
     VXB_DEVICE_ID pInst
     )
     {
-	pcidev_add_entry (pInst);
+	/*pcidev_add_entry (pInst);*/
     return;
     }
 
