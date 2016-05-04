@@ -161,9 +161,9 @@ GBM_EXPORT struct gbm_device *
 gbm_create_device(int fd)
 {
    struct gbm_device *gbm = NULL;
+#if !defined(__vxworks)
    struct stat buf;
 
-#if !defined(__vxworks)
    if (fd < 0 || fstat(fd, &buf) < 0 || !S_ISCHR(buf.st_mode)) {
       errno = EINVAL;
       return NULL;
@@ -178,7 +178,9 @@ gbm_create_device(int fd)
       return NULL;
 
    gbm->dummy = gbm_create_device;
+#if !defined(__vxworks)
    gbm->stat = buf;
+#endif /* __vxworks */
    gbm->refcount = 1;
 
    if (device_num < ARRAY_SIZE(devices)-1)

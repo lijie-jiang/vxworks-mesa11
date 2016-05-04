@@ -678,9 +678,22 @@ LOCAL STATUS createMem
      * The memory should be writeable and non-cached, this is important for
      * supporting frame-buffer operations.
      */
-    (void)vmStateSet (NULL, virtAddr, pDev->fbSize,
-                      GFX_VM_STATE_MASK, GFX_VM_STATE);
-
+    if (ERROR == vmStateSet (NULL, virtAddr, pDev->fbSize,
+                             GFX_VM_STATE_MASK, GFX_VM_STATE))
+        {
+        free (gfxComp.videoMemory);
+        gfxComp.videoMemory = NULL;
+        (void)fprintf (stderr, "vmStateSet error\n");
+        return ERROR;
+        }
+    if (ERROR == vmStateSet (NULL, virtAddr, pDev->fbSize,
+                             VM_STATE_MASK_CACHEABLE, VM_STATE_CACHEABLE_NOT))
+        {
+        free (gfxComp.videoMemory);
+        gfxComp.videoMemory = NULL;
+        (void)fprintf (stderr, "vmStateSet error\n");
+        return ERROR;
+        }
     if (ERROR == vmTranslate (NULL, virtAddr, &physAddr))
         {
         free (gfxComp.videoMemory);
@@ -1981,6 +1994,12 @@ LOCAL void drvCleanup
 
     if (gfxComp.init && gfxComp.videoMemory)
         {
+        if (ERROR == vmStateSet (NULL, (VIRT_ADDR)gfxComp.videoMemory, pDev->fbSize,
+                                 MMU_ATTR_CACHE_MSK, MMU_ATTR_CACHE_DEFAULT))
+            {
+            (void)fprintf (stderr, "vmStateSet error\n");
+            }
+
         free (gfxComp.videoMemory);
         gfxComp.videoMemory = NULL;
         }

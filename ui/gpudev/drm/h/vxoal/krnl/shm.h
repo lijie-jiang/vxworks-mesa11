@@ -11,6 +11,7 @@
 /*
 modification history
 --------------------
+29feb16,yat  Add memory alloc and mapping using write combine (US76256)
 15jul15,yat  Clean up vxoal (US60452)
 05jun15,rpc  DRM/i915 3.18 port (US59495)
 24jan14,mgc  Modified for VxWorks 7 release
@@ -60,7 +61,7 @@ static inline struct file *shmem_file_setup
 
     page = drm_alloc_npages(GFP_DMA32 | __GFP_ZERO,
                             (int)((PAGE_ALIGN(size)) >> PAGE_SHIFT),
-                            1, (VIRT_ADDR)virtAddr, (PHYS_ADDR)physAddr);
+                            1, (VIRT_ADDR)virtAddr, (PHYS_ADDR)physAddr, 1);
     if (page == NULL)
         {
         goto pageErr;

@@ -36,7 +36,7 @@ endif
 
 SUBDIRS = main swap fbo gear
 ifdef _MESA_DRI
-SUBDIRS += esmain es2swap es2fbo es2gear es2logo es3swap
+SUBDIRS += esmain es2swap es2fbo es2gear es2logo es3swap eglkms
 endif
 
 include $(TGT_DIR)/h/make/rules.library
