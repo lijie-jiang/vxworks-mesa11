@@ -46,6 +46,21 @@ modification history
    will not be called during FB demos and tests runs */
 #define GFX_USE_CURRENT_VIDEO_MODES
 
+#if defined(GFX_USE_PMAP)
+#define GFX_PMAP_ATTR               (MMU_ATTR_VALID |         \
+                                     MMU_ATTR_SUP_RW |        \
+                                     MMU_ATTR_USR_RW |        \
+                                     MMU_ATTR_SPL_1)
+#endif
+
+#define GFX_VM_STATE                (VM_STATE_VALID |         \
+                                     VM_STATE_WRITABLE |      \
+                                     MMU_ATTR_SPL_MSK)
+
+#define GFX_VM_STATE_MASK           (VM_STATE_MASK_VALID |    \
+                                     VM_STATE_MASK_WRITABLE | \
+                                     MMU_ATTR_SPL_1)
+
 /* typedefs */
 
 typedef enum gfxDisp

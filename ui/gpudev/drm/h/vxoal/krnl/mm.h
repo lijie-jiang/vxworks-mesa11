@@ -271,14 +271,22 @@ extern void *ioremap
     unsigned long size
     );
 
+extern void *ioremap_wc
+    (
+    unsigned long offset,
+    unsigned long size
+    );
+
+extern void *ioremap_nocache
+    (
+    unsigned long offset,
+    unsigned long size
+    );
+
 extern void iounmap
     (
     void *addr
     );
-
-#define ioremap_wc(offset, size) ioremap(offset, size)
-#define acpi_os_ioremap(phys, size) ioremap(phys, size)
-#define ioremap_nocache(offset, size) ioremap(offset, size)
 
 extern struct io_mapping *io_mapping_create_wc
     (
@@ -291,7 +299,7 @@ extern void io_mapping_free
     );
 
 #define io_mapping_map_wc(mapping, offset)                                     \
-    ioremap((mapping)->base + (offset), PAGE_SIZE)
+    ioremap_wc((mapping)->base + (offset), PAGE_SIZE)
 #define io_mapping_unmap(addr) iounmap(addr)
 #define io_mapping_map_atomic_wc(mapping, offset)                              \
     io_mapping_map_wc(mapping, offset)
@@ -304,6 +312,20 @@ extern void io_mapping_free
 #define devm_request_mem_region(p1, p2, p3, p4) ((struct resource *)((long)(p2)))
 
 /* Generic memory allocation */
+#undef pr_err
+#ifndef pr_err
+#define pr_err(fmt, ...)                                                       \
+    ({                                                                         \
+    if (INT_CONTEXT())                                                         \
+        {                                                                      \
+        kprintf(pr_fmt(fmt), ##__VA_ARGS__);                                   \
+        }                                                                      \
+    else                                                                       \
+        {                                                                      \
+        printf(pr_fmt(fmt), ##__VA_ARGS__);                                    \
+        }                                                                      \
+    })
+#endif
 
 #define kmalloc(size, flags)                                                   \
     ({                                                                         \
@@ -368,13 +390,19 @@ extern struct page *drm_alloc_npages
     int numPages,
     int map,
     VIRT_ADDR virtAddr,
-    PHYS_ADDR physAddr
+    PHYS_ADDR physAddr,
+    int wc
     );
 
 extern void drm_free_npages
     (
     struct page *page,
     int numPages
+    );
+
+extern void drm_free_vxaddr
+    (
+    void *addr
     );
 
 extern int set_pages_uc
@@ -400,7 +428,7 @@ extern void *__vmalloc
 
 #define get_order(size) ilog2(size)
 #define alloc_pages(mask, order) drm_alloc_npages(mask, 1 << order,            \
-                    0, (VIRT_ADDR)NULL, (PHYS_ADDR)NULL)
+                    0, (VIRT_ADDR)NULL, (PHYS_ADDR)NULL, 0)
 #define alloc_page(mask) alloc_pages(mask, 0)
 #define __free_pages(page, order) drm_free_npages(page, 1 << order)
 #define __free_page(page) __free_pages(page, 0)
@@ -447,7 +475,8 @@ static inline unsigned long page_to_pfn
 
 #define set_page_dirty(page) ({(page)=(page);})
 #define mark_page_accessed(page)
-#define page_cache_release(page)
+#define page_cache_release(page)                                               \
+    drm_free_vxaddr(page->virtAddr)
 #define release_pages(pages, nr, cold)
 #define set_pages_wb(page, numpages)
 #define ClearPageReserved(page)

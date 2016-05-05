@@ -127,6 +127,9 @@ struct gbm_dri_surface {
 
    void *dri_private;
 };
+#ifdef __GNUC__
+#define inline __inline
+#endif /* __GNUC__ */
 
 static inline struct gbm_dri_device *
 gbm_dri_device(struct gbm_device *gbm)

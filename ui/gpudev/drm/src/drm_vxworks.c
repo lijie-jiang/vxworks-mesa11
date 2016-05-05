@@ -62,9 +62,12 @@ static GFX_COMP gfxComp =
    };
 
 static int drmDrvNum = ERROR;
-
+#if !defined(_WRS_CONFIG_VXBUS_LEGACY)
 static STATUS pciDrmDevProbe (VXB_DEV_ID);
 static STATUS pciDrmDevAttach (VXB_DEV_ID);
+#else
+LOCAL BOOL pciDrmDevProbe (VXB_DEV_ID);
+#endif
 
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
 static VXB_DRV_METHOD pciDrmDevMethodList[] =
@@ -87,6 +90,133 @@ VXB_DRV vxbPciDrmDevDrv =
     };
 
 VXB_DRV_DEF(vxbPciDrmDevDrv)
+#else
+LOCAL struct vxbDeviceMethod drmMethods[] =
+   {
+   { 0, 0 }
+   };
+
+LOCAL void drmInstInit (VXB_DEVICE_ID);
+LOCAL void drmInstInit2 (VXB_DEVICE_ID);
+LOCAL void drmInstConnect (VXB_DEVICE_ID);
+
+LOCAL struct vxbPciID drmPciDevIDList[] =
+    {   
+		{ 0xFFFF, 0xFFFF }
+    };
+
+LOCAL struct drvBusFuncs drmFuncs =
+    {
+    drmInstInit,	/* devInstanceInit */
+    drmInstInit2,	/* devInstanceInit2 */
+    drmInstConnect	/* devConnect */
+    };
+
+LOCAL struct vxbPciRegister DrmiDevPciRegistration =
+    {
+        {
+        NULL,			/* pNext */
+        VXB_DEVID_DEVICE,	/* devID */
+        VXB_BUSID_PCI,		/* busID = PCI */
+        VXB_VER_5_0_0,  	/* vxbVersion */
+        "pciDrmDev",		/* drvName */
+        &drmFuncs,		/* pDrvBusFuncs */
+        NULL,		/* pMethods */
+        pciDrmDevProbe,			/* devProbe */
+        },
+    NELEMENTS(drmPciDevIDList),
+    &drmPciDevIDList[0],
+    };
+/*******************************************************************************
+*
+* drmDevicePciRegister - register sdhcStorage driver
+*
+* This routine registers the sdhcStorage driver with the vxbus subsystem.
+*
+* RETURNS: N/A
+*
+* ERRNO: N/A
+*/
+
+void drmDevicePciRegister (void)
+    {
+    vxbDevRegister (&DrmiDevPciRegistration);
+    }
+
+/*******************************************************************************
+*
+* drmInstInit - first level initialization routine of drm device
+*
+* This routine performs the first level initialization of the drm device.
+*
+* RETURNS: N/A
+*
+* ERRNO: N/A
+*/
+
+LOCAL void drmInstInit
+    (
+    VXB_DEVICE_ID pInst
+    )
+    {
+    /* get the next available unit number */
+
+    if (pInst->busID == VXB_BUSID_PCI)
+        vxbNextUnitGet (pInst);
+    }
+
+/*******************************************************************************
+*
+* drmInstInit2 - second level initialization routine of drm device
+*
+* This routine performs the second level initialization of the drm device.
+*
+* RETURNS: N/A
+*
+* ERRNO: N/A
+*/
+
+LOCAL void drmInstInit2
+    (
+    VXB_DEVICE_ID pInst
+    )
+    { 
+    unsigned int i=0;
+     for (i = 0; i < VXB_MAXBARS; i++)
+        {
+        if (pInst->regBaseFlags[i] == VXB_REG_MEM)
+            break;
+        }
+	  if (i == VXB_MAXBARS)
+        return;
+	
+	    
+	 gfxComp.vxbDevId = pInst;
+ 
+    return;
+    }
+
+/*******************************************************************************
+*
+* drmInstConnect - third level initialization routine of sdhc device
+*
+* This routine performs the third level initialization of the sdhc device.
+*
+* RETURNS: N/A
+*
+* ERRNO: N/A
+*/
+
+LOCAL void drmInstConnect
+    (
+    VXB_DEVICE_ID pInst
+    )
+    {
+	/*pcidev_add_entry (pInst);*/
+    return;
+    }
+
+
 #endif
 
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
@@ -154,6 +284,44 @@ static STATUS pciDrmDevAttach
 
     return OK;
     }
+#else
+LOCAL BOOL pciDrmDevProbe
+    (
+    VXB_DEVICE_ID pDev
+    )
+    {
+    UINT16 devId = 0;
+    UINT16 vendorId = 0;
+    UINT32 classValue = 0;
+    const struct pci_device_id *pciidlist;
+    VXB_PCI_BUS_CFG_READ (pDev, PCI_CFG_VENDOR_ID, 2, vendorId);
+    VXB_PCI_BUS_CFG_READ (pDev, PCI_CFG_DEVICE_ID, 2, devId);
+    VXB_PCI_BUS_CFG_READ (pDev, PCI_CFG_REVISION, 4, classValue);
+
+    /*AMD*/
+    if (pDev == NULL)
+        return ERROR;
+
+    pciidlist = gfxDrmDevPciList();
+    if (pciidlist == NULL)
+        return ERROR;
+
+    pcidev_add_entry (pDev);
+
+    while ((pciidlist->vendor != 0) &&
+           (pciidlist->device != 0))
+        {
+        if ((pciidlist->vendor == vendorId) &&
+            (pciidlist->device == devId))
+            {
+            pr_info("PCI device found: pciVendId=0x%x, pciDevId=0x%x\n", vendorId, devId);
+            return TRUE;
+            }
+        pciidlist++;
+        }
+      return (FALSE);
+    }
+
 #endif
 
 /*******************************************************************************
@@ -445,6 +613,21 @@ int pci_register_driver
     if (pci_dev == NULL) return ERROR;
 
     if (pci_driver->probe (pci_dev, &(pci_driver->id_table[cnt])) != 0) return ERROR;
+#else
+   {
+    unsigned short vendor, device;
+    VXB_PCI_BUS_CFG_READ (gfxComp.vxbDevId, PCI_CFG_VENDOR_ID, 2, vendor);
+    VXB_PCI_BUS_CFG_READ (gfxComp.vxbDevId, PCI_CFG_DEVICE_ID, 2, device);
+    cnt = 0;
+    while ((pci_driver->id_table[cnt].vendor != vendor) ||
+           (pci_driver->id_table[cnt].device != device))
+        cnt++;
+ }
+    
+    pci_dev = pcidev_find_entry(gfxComp.vxbDevId);
+    if (pci_dev == NULL) return ERROR;
+
+    if (pci_driver->probe (pci_dev, &(pci_driver->id_table[cnt])) != 0) return ERROR;
 #endif
     return OK;
     }
@@ -506,6 +689,23 @@ int request_irq
         pr_err("vxbIntEnable error\n");
         return -1;
         }
+#else	
+   
+    if (ERROR == vxbIntConnect (gfxComp.vxbDevId,
+                                0,
+                 (VOIDFUNCPTR)(((struct drm_device *)dev)->driver->irq_handler),
+                                (void *)dev))
+        {
+        pr_err("vxbIntConnect error\n");
+        return -1;
+        }
+
+    if (ERROR == vxbIntEnable(gfxComp.vxbDevId,0, (VOIDFUNCPTR)(((struct drm_device *)dev)->driver->irq_handler),
+		 (void *)dev))
+        {
+        pr_err("vxbIntEnable error\n");
+        return -1;
+        }
 #endif
     return 0;
     }
@@ -520,6 +720,11 @@ void free_irq
 #if !defined(_WRS_CONFIG_VXBUS_LEGACY)
     (void)vxbIntDisable(gfxComp.vxbDevId, gfxComp.pResIrq);
     (void)vxbIntDisconnect(gfxComp.vxbDevId, gfxComp.pResIrq);
+#else
+    (void)vxbIntDisable(gfxComp.vxbDevId, 0,(VOIDFUNCPTR)(((struct drm_device *)dev)->driver->irq_handler),
+    (void *)dev);
+    (void)vxbIntDisconnect(gfxComp.vxbDevId,0, (VOIDFUNCPTR)(((struct drm_device *)dev)->driver->irq_handler),
+		(void *)dev);
 #endif
     }
 

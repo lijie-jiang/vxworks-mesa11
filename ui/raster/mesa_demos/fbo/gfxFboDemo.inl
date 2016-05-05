@@ -11,6 +11,7 @@
 /*
 modification history
 --------------------
+01mar16,yat  Add gfxGbmHelper (US76256)
 24feb16,yat  Fix static analysis defects (US75033)
 13jan16,yat  Written (US24710)
 */
@@ -48,13 +49,7 @@ This program runs the fbo demo.
 #include <GL/gl.h>
 #include <EGL/egl.h>
 #if defined(GFX_USE_GBM)
-#include <gbm.h>
-#include <xf86drm.h>
-#include <xf86drmMode.h>
-#define GFX_KMS_GET_CONN_STR
-#define GFX_KMS_FIND_CONN_CRTC
-#define GFX_KMS_FIND_CRTC_FB
-#include "gfxKmsHelper.inl"
+#include "gfxGbmHelper.inl"
 #endif /* GFX_USE_GBM */
 #if defined(GFX_USE_EVDEV)
 #include <evdevLib.h>
@@ -82,13 +77,7 @@ typedef struct
     EGLint surfHeight;      /* EGL surface height */
     EGLint surfBuffer;      /* EGL surface render buffer */
 #if defined(GFX_USE_GBM)
-    int                  drmDevFd;
-    struct gbm_device*   gbm_dev;
-    struct gbm_surface*  gbm_surf;
-    drmModeModeInfo      mode;
-    uint32_t             connId;
-    uint32_t             crtcId;
-    uint32_t             fbId;
+    GFX_GBM              gbm;
 #endif /* GFX_USE_GBM */
 #if defined(GFX_USE_EVDEV)
     int                  evDevFd;
@@ -304,10 +293,8 @@ static void fboEglDeinit
             }
 
 #if defined(GFX_USE_GBM)
-        if (pDemo->gbm_surf)
-            {
-            gbm_surface_destroy (pDemo->gbm_surf);
-            }
+        gfxGbmRmFB (&(pDemo->gbm));
+        gfxGbmDestroySurface (&(pDemo->gbm));
 #endif /* GFX_USE_GBM */
 
         /* Close the display */
@@ -317,68 +304,11 @@ static void fboEglDeinit
     (void)eglReleaseThread ();
 
 #if defined(GFX_USE_GBM)
-    gfxKmsCloseDrmDev (pDemo->drmDevFd);
+    gfxGbmDestroyDevice (&(pDemo->gbm));
 #endif /* GFX_USE_GBM */
 
     fboCleanup (pDemo);
     }
-
-#if defined(GFX_USE_GBM)
-/*******************************************************************************
-*
-* fboFindDrmFb - find a DRM framebuffer
-*
-* This routine finds a DRM framebuffer.
-*
-* RETURNS: 0 if successful, or 1 otherwise
-*
-* ERRNO: N/A
-*
-* SEE ALSO:
-*/
-
-static int fboFindDrmFb
-    (
-    FBO_SCENE* pDemo
-    )
-    {
-    drmModeCrtc*         crtc;
-    drmModeFB*           fb;
-    drmModeConnector*    conn;
-
-    if (gfxKmsFindCrtcFb (pDemo->drmDevFd, &crtc, &fb))
-        {
-        (void)fprintf (stderr, "No crtc found\n");
-        return 1;
-        }
-
-    if (gfxKmsFindConnCrtc (pDemo->drmDevFd, crtc, &conn))
-        {
-        (void)fprintf (stderr, "No connector found\n");
-        drmModeFreeCrtc (crtc);
-        return 1;
-        }
-
-    if (!fb)
-        {
-        /* Use the first available mode */
-        crtc->mode = conn->modes[0];
-        }
-
-    (void)fprintf (stderr, "Found %s %s %dx%d\n",
-                   gfxKmsGetConnModeStr(DRM_MODE_CONNECTED),
-                   gfxKmsGetConnTypeStr (conn->connector_type),
-                   crtc->mode.hdisplay, crtc->mode.vdisplay);
-
-    pDemo->mode = crtc->mode;
-    pDemo->connId = conn->connector_id;
-    pDemo->crtcId = crtc->crtc_id;
-    drmModeFreeCrtc (crtc);
-    drmModeFreeConnector (conn);
-
-    return 0;
-    }
-#endif /* GFX_USE_GBM */
 
 /*******************************************************************************
  *
@@ -455,22 +385,14 @@ static FBO_SCENE* fboEglInit
         }
     else
         {
-        /* Open a DRM device to use Mesa GPU DRI driver */
-        if (gfxKmsOpenDrmDev (&(pDemo->drmDevFd)))
+        /* Mesa EGL DRI driver */
+        if (gfxGbmCreateDevice (&(pDemo->gbm)))
             {
-            free (pDemo);
-            return (NULL);
-            }
-
-        pDemo->gbm_dev = gbm_create_device (pDemo->drmDevFd);
-        if (pDemo->gbm_dev == NULL)
-            {
-            (void)fprintf (stderr, "gbm_create_device failed\n");
             fboEglDeinit (pDemo);
             return (NULL);
             }
 
-        pDemo->display = eglGetDisplay ((EGLNativeDisplayType)pDemo->gbm_dev);
+        pDemo->display = eglGetDisplay ((EGLNativeDisplayType)pDemo->gbm.gbm_dev);
         }
 #else
     pDemo->display = eglGetDisplay (EGL_DEFAULT_DISPLAY);
@@ -489,9 +411,9 @@ static FBO_SCENE* fboEglInit
         return (NULL);
         }
 #if defined(GFX_USE_GBM)
-    if (pDemo->gbm_dev)
+    if (pDemo->gbm.gbm_dev)
         {
-        if (fboFindDrmFb (pDemo))
+        if (gfxGbmFindDrmFb (&(pDemo->gbm)))
             {
             fboEglDeinit (pDemo);
             return (NULL);
@@ -523,26 +445,20 @@ static FBO_SCENE* fboEglInit
      * dimensions
      */
 #if defined(GFX_USE_GBM)
-    if (pDemo->gbm_dev)
+    if (pDemo->gbm.gbm_dev)
         {
-        pDemo->gbm_surf = gbm_surface_create (pDemo->gbm_dev,
-                                              pDemo->mode.hdisplay,
-                                              pDemo->mode.vdisplay,
-                                              GBM_BO_FORMAT_XRGB8888,
-                          GBM_BO_USE_RENDERING|GBM_BO_USE_SCANOUT);
-        if (pDemo->gbm_surf == NULL)
+        if (gfxGbmCreateSurface (&(pDemo->gbm)))
             {
-            (void)fprintf (stderr, "gbm_surface_create failed\n");
             fboEglDeinit (pDemo);
             return (NULL);
             }
         }
     else
         {
-        pDemo->gbm_surf = NULL;
+        pDemo->gbm.gbm_surf = NULL;
         }
     pDemo->surface = eglCreateWindowSurface (pDemo->display, eglConfig,
-                        (EGLNativeWindowType)pDemo->gbm_surf, NULL);
+                        (EGLNativeWindowType)pDemo->gbm.gbm_surf, NULL);
 #else
     pDemo->surface = eglCreateWindowSurface (pDemo->display, eglConfig,
                                              NULL, NULL);
@@ -600,49 +516,6 @@ static FBO_SCENE* fboEglInit
     (void)eglSwapBuffers (pDemo->display, pDemo->surface);
     glClear (GL_COLOR_BUFFER_BIT);
     (void)eglSwapBuffers (pDemo->display, pDemo->surface);
-#if defined(GFX_USE_GBM)
-    if (pDemo->gbm_dev)
-        {
-        struct gbm_bo* gbm_bo;
-        uint32_t handle;
-
-        gbm_bo = gbm_surface_lock_front_buffer (pDemo->gbm_surf);
-        if (gbm_bo == NULL)
-            {
-            (void)fprintf (stderr, "gbm_surface_lock_front_buffer failed\n");
-            fboEglDeinit (pDemo);
-            return (NULL);
-            }
-
-        handle = gbm_bo_get_handle (gbm_bo).u32;
-        if (handle == 0)
-            {
-            (void)fprintf (stderr, "Bad handle\n");
-            fboEglDeinit (pDemo);
-            return (NULL);
-            }
-
-        /* Add FB. Note: pitch can be at least 512 byte aligned in DRM/I915 */
-        if (drmModeAddFB (pDemo->drmDevFd,
-                          pDemo->mode.hdisplay, pDemo->mode.vdisplay,
-                          24, 32, (((pDemo->mode.hdisplay << 2) + 511) & ~511),
-                          handle, &(pDemo->fbId)))
-            {
-            (void)fprintf (stderr, "drmModeAddFB failed\n");
-            fboEglDeinit (pDemo);
-            return (NULL);
-            }
-
-        if (drmModeSetCrtc (pDemo->drmDevFd, pDemo->crtcId, pDemo->fbId,
-                            0, 0, &(pDemo->connId), 1, &(pDemo->mode)))
-            {
-            fboEglDeinit (pDemo);
-            return (NULL);
-            }
-
-        gbm_surface_release_buffer (pDemo->gbm_surf, gbm_bo);
-        }
-#endif /* GFX_USE_GBM */
 #if defined(GFX_USE_EVDEV)
     /* Open evdev device */
     for (e = 0; e < EV_DEV_DEVICE_MAX; e++)
@@ -1044,21 +917,12 @@ static int gfxFboDemo
             break;
             }
 #if defined(GFX_USE_GBM)
-        if (pDemo->gbm_surf)
+        if (pDemo->gbm.gbm_surf)
             {
-            struct gbm_bo* gbm_bo;
-
-            gbm_bo = gbm_surface_lock_front_buffer (pDemo->gbm_surf);
-            if (gbm_bo == NULL)
+            if (gfxGbmPageFlip (&(pDemo->gbm)))
                 {
-                (void)fprintf (stderr, "gbm_surface_lock_front_buffer failed\n");
                 break;
                 }
-
-            (void)gfxKmsPageFlip (pDemo->drmDevFd, pDemo->crtcId, pDemo->fbId,
-                                  &(pDemo->connId), &(pDemo->mode), 20, 1);
-
-            gbm_surface_release_buffer (pDemo->gbm_surf, gbm_bo);
             }
 #endif /* GFX_USE_GBM */
         if (runTime != 0)

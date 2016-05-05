@@ -33,6 +33,7 @@ modification history
 #define GFX_KMS_FIND_CRTC_CONN
 #define GFX_KMS_CREATE_DRM_FB
 #define GFX_KMS_DESTROY_DRM_FB
+#define GFX_KMS_PAGE_FLIP
 #include <gfxKmsHelper.inl>
 #include <drv/timer/timerDev.h> /* for sysClkRateGet */
 

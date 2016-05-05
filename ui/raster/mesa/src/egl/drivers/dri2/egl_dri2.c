@@ -70,7 +70,7 @@ modification history
 
 #include "egl_dri2.h"
 #include "util/u_atomic.h"
-
+#undef HAVE_LIBDRM
 /* The kernel header drm_fourcc.h defines the DRM formats below.  We duplicate
  * some of the definitions here so that building Mesa won't bleeding-edge
  * kernel headers.

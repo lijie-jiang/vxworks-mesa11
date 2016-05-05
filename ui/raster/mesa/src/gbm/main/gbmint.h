@@ -55,8 +55,9 @@ struct gbm_device {
    int fd;
    const char *name;
    unsigned int refcount;
+#if !defined(__vxworks)
    struct stat stat;
-
+#endif /* __vxworks */
    void (*destroy)(struct gbm_device *gbm);
    int (*is_format_supported)(struct gbm_device *gbm,
                               uint32_t format,

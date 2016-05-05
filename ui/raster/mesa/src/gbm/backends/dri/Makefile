@@ -17,8 +17,8 @@ LIB_BASE_NAME = gfxMesaEGL
 # Including defs.library to see if _WRS_CONFIG_SMP is defined.
 # It must be after LIB_BASE_NAME
 include $(TGT_DIR)/h/make/defs.library
-EXTRA_INCLUDE += -I../../main -I../../../../h   -I../../../../include -I../../../../../../gpudev/libdrm/h \
-               -I../../../../../../khronos/h 
+EXTRA_INCLUDE += -I../../main -I../../../../h   -I../../../../include\
+               -I../../../../../../khronos/h -I$(TGT_DIR)/src/ui/h
 
 EXTRA_DEFINE += -DHAVE_PTHREAD=1
 

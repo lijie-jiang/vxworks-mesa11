@@ -37,7 +37,7 @@ NOMANUAL
 #include <drv/timer/timerDev.h> /* for sysClkRateGet */
 #include <taskLib.h> /* for taskDelay */
 #include <sys/times.h> /* for timeval */
-#define  _WRS_CONFIG_VXBUS_LEGACY
+#define _WRS_CONFIG_VXBUS_LEGACY
 #if defined(_WRS_CONFIG_VXBUS_LEGACY)
 #include <vxbTimerLib.h> /* for vxbUsDelay */
 #else

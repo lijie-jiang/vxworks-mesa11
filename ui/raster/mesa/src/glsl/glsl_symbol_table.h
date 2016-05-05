@@ -25,9 +25,10 @@
 #pragma once
 #ifndef GLSL_SYMBOL_TABLE
 #define GLSL_SYMBOL_TABLE
-
+#ifndef __ICC
 #include <new>
-
+#else
+#endif
 extern "C" {
 #include "program/symbol_table.h"
 }

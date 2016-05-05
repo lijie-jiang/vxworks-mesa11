@@ -152,8 +152,9 @@ static inline long atomic_cmpxchg
     long newVal
     )
     {
+    long ret = atomic_read(v);
     (void) atomic_cas(v, oldVal, newVal);
-    return oldVal;
+    return ret;
     }
 #endif /* __vxworks */
 

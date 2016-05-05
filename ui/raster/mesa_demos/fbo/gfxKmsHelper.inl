@@ -11,6 +11,7 @@
 /*
 modification history
 --------------------
+01mar16,yat  Add GFX_KMS_PAGE_FLIP (US76256)
 08jan16,qsn  Fix missing framebuffer problem (US72757)
 20oct15,qsn  Add support for select (US68597)
 09oct15,yat  Written
@@ -839,6 +840,7 @@ static int gfxKmsMmapDrmFb
     }
 #endif /* GFX_KMS_MMAP_DRM_FB */
 
+#if defined(GFX_KMS_PAGE_FLIP)
 /*******************************************************************************
 *
 * gfxKmsPageFlipHandler - page flip handler
@@ -975,5 +977,6 @@ static int gfxKmsPageFlip
 
     return 0;
     }
+#endif /* GFX_KMS_PAGE_FLIP */
 
 #endif /* _GFX_KMS_HELPER_H */

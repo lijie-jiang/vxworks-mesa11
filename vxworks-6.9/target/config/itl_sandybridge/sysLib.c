@@ -1370,7 +1370,7 @@ void sysHwInit (void)
     pSysPlbMethods = pc386PlbMethods;
     _vxb_usDelayRtn = &sysUsDelay;	
     hardWareInterFaceInit();
-
+    drmDevicePciRegister();
 #if defined (INCLUDE_SYMMETRIC_IO_MODE) || defined (INCLUDE_VIRTUAL_WIRE_MODE)
     /* establish link to vxb APIC methods */
 
@@ -4690,7 +4690,7 @@ UINT32 sysPerformanceGet (void)
 
 #endif /* INCLUDE_CPU_PWR_ARCH */
 
-uid_t geteuid (void)
+unsigned int  geteuid (void)
     {
     return 0;
     }

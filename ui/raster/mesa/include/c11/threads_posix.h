@@ -191,11 +191,9 @@ mtx_init(mtx_t *mtx, int type)
       && type != (mtx_timed|mtx_recursive)
       && type != (mtx_try|mtx_recursive))
         return thrd_error;
-    pthread_mutexattr_init(&attr);
-#ifdef VXWOKRS_7	
+    pthread_mutexattr_init(&attr);	
     if ((type & mtx_recursive) != 0)
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-#endif	
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);	
     pthread_mutex_init(mtx, &attr);
     pthread_mutexattr_destroy(&attr);
     return thrd_success;

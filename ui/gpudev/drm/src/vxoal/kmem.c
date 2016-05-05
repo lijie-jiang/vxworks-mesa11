@@ -11,6 +11,9 @@
 /*
 modification history
 --------------------
+04mar16,qsn  Add function to help free GEM backing storage (US76479)
+02mar16,yat  Add DRM physical memory mapping cache off option (US76256)
+29feb16,yat  Add memory alloc and mapping using write combine (US76256)
 25feb16,yat  Add GFX_USE_PMAP for non COMPAT69 (US76256)
 14sep15,yat  Clean up code (US66034)
 30mar15,rpc  Static analysis fixes 2nd pass
@@ -43,12 +46,34 @@ NOMANUAL
 #include "private/vmLibP.h" /* for vmTranslate */
 
 /* defines */
+#undef pr_err
+#ifndef pr_err
+#define pr_err(fmt, ...)                                                       \
+    ({                                                                         \
+    if (INT_CONTEXT())                                                         \
+        {                                                                      \
+        kprintf(pr_fmt(fmt), ##__VA_ARGS__);                                   \
+        }                                                                      \
+    else                                                                       \
+        {                                                                      \
+        printf(pr_fmt(fmt), ##__VA_ARGS__);                                    \
+        }                                                                      \
+    })
+#endif
 
 #if defined(GFX_USE_PMAP)
-#define GFX_PMAP_ATTR               (MMU_ATTR_SUP_RW |          \
-                                     MMU_ATTR_USR_RW |          \
-                                     MMU_ATTR_CACHE_OFF |       \
-                                     MMU_ATTR_VALID)
+#define GFX_PMAP_ATTR_CACHE_OFF     (MMU_ATTR_VALID |         \
+                                     MMU_ATTR_SUP_RW |        \
+                                     MMU_ATTR_USR_RW |        \
+                                     MMU_ATTR_CACHE_OFF)
+#define GFX_PMAP_ATTR_CACHE         (MMU_ATTR_VALID |         \
+                                     MMU_ATTR_SUP_RW |        \
+                                     MMU_ATTR_USR_RW |        \
+                                     MMU_ATTR_CACHE_DEFAULT)
+#define GFX_PMAP_ATTR_WRITE_COMBINE (MMU_ATTR_VALID |         \
+                                     MMU_ATTR_SUP_RW |        \
+                                     MMU_ATTR_USR_RW |        \
+                                     MMU_ATTR_SPL_1)
 #endif
 
 #define GFX_IS_RTP_CTX              (MY_CTX_ID() != kernelId)
@@ -148,7 +173,7 @@ static GFX_MMAP *find_mmap_virt
         {
         tmpAddr = (unsigned long)(tmpMap->virtAddr);
         if ((tmpAddr <= addr) &&
-            (addr <= (tmpAddr + tmpMap->size)))
+            (addr < (tmpAddr + tmpMap->size)))
             {
             return tmpMap;
             }
@@ -233,7 +258,11 @@ static STATUS create_mmap
     GFX_MMAP*       newMap;
 
     newMap = (GFX_MMAP*)kcalloc (1, sizeof (GFX_MMAP), GFP_KERNEL);
-    if (newMap == (GFX_MMAP*)NULL) return ERROR;
+    if (newMap == (GFX_MMAP*)NULL) 
+		{
+		pr_err ("create_mmap failed\n");
+		return ERROR;
+    	}
 
     newMap->rtpId = MY_CTX_ID ();
     newMap->preAllocMap = preAllocMap;
@@ -351,7 +380,8 @@ static void *map_mmap
     GFX_MMAP**      tmpMapHead,
     PHYS_ADDR       physAddr,
     void*           addr,
-    unsigned long   size
+    unsigned long   size,
+    int             wc
     )
     {
     VIRT_ADDR virtAddr;
@@ -377,7 +407,8 @@ static void *map_mmap
     if (GFX_IS_RTP_CTX)
         {
 #if defined(GFX_USE_PMAP)
-        virtAddr = (VIRT_ADDR)pmapPrivateMap (physAddr, size, GFX_PMAP_ATTR);
+        unsigned int mmuAttr = GFX_PMAP_ATTR_CACHE_OFF;
+        virtAddr = (VIRT_ADDR)pmapPrivateMap (physAddr, size, mmuAttr);
         if (virtAddr == (VIRT_ADDR)PMAP_FAILED)
             {
             pr_err ("pmapPrivateMap size:%ld failed\n", size);
@@ -393,7 +424,13 @@ static void *map_mmap
     else
         {
 #if defined(GFX_USE_PMAP)
-        virtAddr = (VIRT_ADDR)pmapGlobalMap (physAddr, size, GFX_PMAP_ATTR);
+#if defined(GFX_USE_PMAP_CACHE_OFF)
+        unsigned int mmuAttr = GFX_PMAP_ATTR_CACHE_OFF;
+#else
+        unsigned int mmuAttr = (wc) ? GFX_PMAP_ATTR_WRITE_COMBINE :
+                                      GFX_PMAP_ATTR_CACHE;
+#endif
+        virtAddr = (VIRT_ADDR)pmapGlobalMap (physAddr, size, mmuAttr);
         if (virtAddr == (VIRT_ADDR)PMAP_FAILED)
             {
             pr_err ("pmapGlobalMap size:%ld failed\n", size);
@@ -401,7 +438,23 @@ static void *map_mmap
             return NULL;
             }
 #else
-        virtAddr = (VIRT_ADDR)addr;
+        /*test code for cache atribute*/
+#define GFX_MMU_ATTR_MASK    (MMU_ATTR_VALID_MSK | MMU_ATTR_PROT_MSK | \
+								   MMU_ATTR_CACHE_MSK)
+								   
+#define GFX_MMU_ATTR_CACHE         (MMU_ATTR_VALID |         \
+											 MMU_ATTR_SUP_RW |		  \
+											 MMU_ATTR_USR_RW |		  \
+											 MMU_ATTR_CACHE_OFF)
+#define GFX_MMU_ATTR_WRITE_COMBINE (MMU_ATTR_VALID |         \
+											 MMU_ATTR_SUP_RW |		  \
+											 MMU_ATTR_USR_RW |   \
+											 MMU_ATTR_CACHE_OFF)
+        unsigned int mmuAttr = (wc) ? GFX_MMU_ATTR_WRITE_COMBINE :
+										GFX_MMU_ATTR_CACHE;
+        virtAddr = (VIRT_ADDR)physAddr;
+		vmStateSet (NULL, virtAddr, size,GFX_MMU_ATTR_MASK, mmuAttr);
+        
 #endif
         }
 
@@ -449,6 +502,7 @@ static void *unmap_mmap
         {
         /* Not found, return virtAddr to free */
         (void)semGive (mmapSemId);
+        pr_err ("mmap not found\n");
         return (void*)virtAddr;
         }
 
@@ -507,7 +561,41 @@ void *ioremap
     unsigned long size
     )
     {
-    return map_mmap (&memMapHead, (PHYS_ADDR)offset, NULL, size);
+    return map_mmap (&memMapHead, (PHYS_ADDR)offset, NULL, size, 0);
+    }
+
+/*******************************************************************************
+*
+* ioremap_wc - map I/O space and set MMU attribute to write combine
+*
+* RETURNS: map
+*
+* SEE ALSO:
+*/
+void *ioremap_wc
+    (
+    unsigned long offset,
+    unsigned long size
+    )
+    {
+    return map_mmap (&memMapHead, (PHYS_ADDR)offset, NULL, size, 1);
+    }
+
+/*******************************************************************************
+*
+* ioremap_nocache - map I/O space and set MMU attribute to nocache
+*
+* RETURNS: map
+*
+* SEE ALSO:
+*/
+void *ioremap_nocache
+    (
+    unsigned long offset,
+    unsigned long size
+    )
+    {
+    return map_mmap (&memMapHead, (PHYS_ADDR)offset, NULL, size, 0);
     }
 
 /*******************************************************************************
@@ -541,11 +629,16 @@ struct io_mapping *io_mapping_create_wc
     )
     {
     struct io_mapping *iomap;
+    void *addr;
 
     iomap = (struct io_mapping *)kcalloc (1, sizeof (struct io_mapping), GFP_KERNEL);
-    if (iomap == (struct io_mapping *)NULL) return iomap;
+    if (iomap == (struct io_mapping *)NULL)
+        {
+        return (struct io_mapping*)NULL;
+        }
 
-    if (map_mmap (&memMapHead, (PHYS_ADDR)base, NULL, size) == NULL)
+    addr = map_mmap (&memMapHead, (PHYS_ADDR)base, NULL, size, 1);
+    if (addr == NULL)
         {
         (void)kfree (iomap);
         return (struct io_mapping*)NULL;
@@ -588,7 +681,8 @@ static VIRT_ADDR alloc_map_mmap
     GFX_MMAP**      tmpMapHead,
     PHYS_ADDR*      pPhysAddr,
     unsigned long   size,
-    int             map
+    int             map,
+    int             wc
     )
     {
     VIRT_ADDR virtAddr;
@@ -602,7 +696,7 @@ static VIRT_ADDR alloc_map_mmap
 
     if (ERROR == vmTranslate (NULL, virtAddr, pPhysAddr))
         {
-        pr_err ("vmTranslate failed\n");
+        pr_err ("vmTranslate error\n");
         (void)kfree ((void*)virtAddr);
         return (VIRT_ADDR)NULL;
         }
@@ -610,7 +704,7 @@ static VIRT_ADDR alloc_map_mmap
     /* Check for need to map */
     if (map)
         {
-        VIRT_ADDR virtAddr2 = (VIRT_ADDR)map_mmap (tmpMapHead, *pPhysAddr, (void*)virtAddr, size);
+        VIRT_ADDR virtAddr2 = (VIRT_ADDR)map_mmap (tmpMapHead, *pPhysAddr, (void*)virtAddr, size, wc);
         if (virtAddr2 == (VIRT_ADDR)NULL)
             {
             pr_err ("map_mmap error size of %lx\n", size);
@@ -621,24 +715,6 @@ static VIRT_ADDR alloc_map_mmap
         }
 
     return virtAddr;
-    }
-
-/*******************************************************************************
-*
-* drm_alloc_pre - alloc and map
-*
-* RETURNS:
-*
-* SEE ALSO:
-*/
-void drm_alloc_pre
-    (
-    unsigned long   size
-    )
-    {
-    PHYS_ADDR       physAddr;
-
-    (void)alloc_map_mmap (&preMapHead, &physAddr, size, 1);
     }
 
 /*******************************************************************************
@@ -655,7 +731,8 @@ struct page *drm_alloc_npages
     int numPages,
     int map,
     VIRT_ADDR virtAddr0,
-    PHYS_ADDR physAddr0
+    PHYS_ADDR physAddr0,
+    int wc
     )
     {
     struct page *page;
@@ -707,7 +784,7 @@ struct page *drm_alloc_npages
 
     if (virtAddr == (VIRT_ADDR)NULL)
         {
-        virtAddr = alloc_map_mmap (&memMapHead, &physAddr, size, map);
+        virtAddr = alloc_map_mmap (&memMapHead, &physAddr, size, map, wc);
         if (virtAddr == (VIRT_ADDR)NULL)
             {
             pr_err ("alloc_map_mmap error size of %x\n", size);
@@ -765,6 +842,41 @@ void drm_free_npages
 
 /*******************************************************************************
 *
+* drm_free_vxaddr - free virtual address
+*
+* RETURNS: N/A
+*
+* SEE ALSO:
+*/
+void drm_free_vxaddr
+    (
+    void *addr
+    )
+    {
+    GFX_MMAP*       tmpMap;
+    void*           vaddr;
+
+    /* Find mmap based on addr */
+    (void)semTake (mmapSemId, WAIT_FOREVER);
+    tmpMap = find_mmap_virt (memMapHead, (VIRT_ADDR)addr);
+    if (tmpMap == (GFX_MMAP*)NULL)
+        {
+        /* address already freed before */
+        (void)semGive (mmapSemId);
+        return;
+        }
+    vaddr = (void *)tmpMap->virtAddr;
+    (void)semGive (mmapSemId);
+
+    vaddr = unmap_mmap (memMapHead, (VIRT_ADDR)vaddr);
+    if (vaddr)
+        {
+        (void)kfree (vaddr);
+        }
+    }
+
+/*******************************************************************************
+*
 * set_pages_uc - set pages cache off
 *
 * RETURNS: 1 if error, 0 otherwise
@@ -777,11 +889,15 @@ int set_pages_uc
     int numPages
     )
     {
-    int size = numPages * PAGE_SIZE;
+    if (!page || !page->virtAddr)
+        {
+        return 1;
+        }
 
-    if (ERROR == vmStateSet (NULL, page->virtAddr, size,
+    if (ERROR == vmStateSet (NULL, page->virtAddr, numPages * PAGE_SIZE,
                              VM_STATE_MASK_CACHEABLE, VM_STATE_CACHEABLE_NOT))
         {
+        pr_err ("vmStateSet error\n");
         return 1;
         }
 
@@ -803,7 +919,7 @@ struct page *vmalloc_to_page
     {
     WARN_DEV;
 
-    return alloc_page (GFP_KERNEL);
+    return alloc_pages (GFP_KERNEL,0);
     }
 
 /*******************************************************************************
@@ -823,8 +939,7 @@ void *__vmalloc
     {
     struct page *page;
 
-    page = drm_alloc_npages(mask, (int)(size >> PAGE_SHIFT),
-                            0, (VIRT_ADDR)NULL, (PHYS_ADDR)NULL);
+    page = drm_alloc_npages(mask, (int)(size >> PAGE_SHIFT),0, (VIRT_ADDR)NULL, (PHYS_ADDR)NULL, 0);
     if (page == (struct page *)NULL)
         {
         return NULL;

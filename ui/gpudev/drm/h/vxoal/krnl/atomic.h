@@ -11,6 +11,7 @@
 /*
 modification history
 --------------------
+04mar16,qsn  Re-wrote atomic_cmpxchg and add atomic_add_unless (US76479)
 19jun15,rpc  Re-wrote atomic_cmpxchg (US50495)
 09mar15,qsn  Added more atomic operations (US50613)
 24jan14,mgc  Modified for VxWorks 7 release
@@ -105,8 +106,9 @@ static inline long atomic_cmpxchg
     long newVal
     )
     {
+    long ret = atomic_read(v);
     (void) atomic_cas(v, oldVal, newVal);
-    return oldVal;
+    return ret;
     }
 
 /*******************************************************************************
@@ -236,7 +238,23 @@ static int kref_put
     return 0;
     }
 
-#include "quirks_atomic.h"
+/*******************************************************************************
+*
+* atomic_add_unless -
+*
+* RETURNS: N/A
+*
+* SEE ALSO:
+*/
+static inline long atomic_add_unless (atomic_t *v, long a, long u)
+{
+    long c, old;
+    c = atomic_read(v);
+    while (c != u && (old = atomic_cmpxchg(v, c, c + a)) != c)
+            c = old;
+    return (long)(c != u);
+}
+
 
 /*******************************************************************************
 *

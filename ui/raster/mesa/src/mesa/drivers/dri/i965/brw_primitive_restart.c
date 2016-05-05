@@ -106,11 +106,11 @@ can_cut_index_handle_prims(struct gl_context *ctx,
          break;
       default:
          /* Cut index does not support these primitive types */
-      //case GL_LINE_LOOP:
-      //case GL_TRIANGLE_FAN:
-      //case GL_QUADS:
-      //case GL_QUAD_STRIP:
-      //case GL_POLYGON:
+      /*case GL_LINE_LOOP:
+      case GL_TRIANGLE_FAN:
+      case GL_QUADS:
+      case GL_QUAD_STRIP:
+      case GL_POLYGON:*/
          return false;
       }
    }

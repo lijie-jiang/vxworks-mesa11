@@ -86,6 +86,7 @@ modification history
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_SYSCTL_H
+#include <vxWorks.h>
 # include <sys/sysctl.h>
 #endif
 
