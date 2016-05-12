@@ -11,6 +11,18 @@
 # 12jan16,mze  remove dead macros
 # 03jul13,y_f  create
 
-POST_NOBUILD_CDFDIRS = cdf
+TGT_DIR=$(WIND_BASE)/target
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = virtualKbd virtualPtr
+
+
+include $(TGT_DIR)/h/make/rules.library

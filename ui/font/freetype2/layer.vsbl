@@ -1,0 +1,31 @@
+/* layer.vsbl - Graphics Framework FreeType2 layer */
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+modification history
+--------------------
+11Mar16,rtm  update version to 2.3.2.2, add UI and RETROFIT (US73137)
+10mar16,mze  upversion number for RPM change no content changed
+23oct15,c_l  Add DOC_BUILD NO
+24dec14,yya  Modified for VxWorks 7 release
+*/
+
+
+Layer  FREETYPE2
+    {
+    SYNOPSIS        Freetype2 font processing library
+    HELP            This provides the Freetype2 font processing library.
+    VERSION         2.3.2.2
+    VENDOR          Wind River
+    FEATURE         UI
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 2.3.2.1, FEATURE, UI}
+    }

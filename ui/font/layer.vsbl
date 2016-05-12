@@ -1,0 +1,31 @@
+/* layer.vsbl - font layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+07jan16,mze  add FEATURE (US73137)
+23oct15,c_l  Add DOC_BUILD NO and remove VSB_REQUIRES
+24dec14,yya  created 
+*/
+
+
+Layer  FONT
+    {
+    SYNOPSIS        Font libraries
+    HELP            This provides various font libraries.
+    VERSION         1.0.0.1
+    VENDOR          Wind River
+    FEATURE         UI
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0, FEATURE, UI}
+    }

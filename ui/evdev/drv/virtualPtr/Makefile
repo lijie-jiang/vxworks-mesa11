@@ -10,7 +10,19 @@
 # --------------------
 # 16may14,yat  Add virtual pointer driver. (US24741)
 
-BUILD_DIRS = src
-POST_NOBUILD_CDFDIRS = cdf
+TGT_DIR=$(WIND_BASE)/target
 
-include $(WIND_KRNL_MK)/rules.layers.mk
+
+DOC_OPTS = -mg -nostrict -missingok
+
+include $(TGT_DIR)/h/make/defs.library
+
+
+
+# Ensure the methods sub-directory comes to the top of the list, so that
+# the rest of the sub-directories are built after vxbMethodDecl.h is
+# updated if a new VxBus method file is added in the methods directory.
+
+SUBDIRS = src
+
+include $(TGT_DIR)/h/make/rules.library

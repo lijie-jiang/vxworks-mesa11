@@ -11,6 +11,7 @@
 /*
 modification history
 --------------------
+29feb16,yat  Add check for vmStateSet return (US76256)
 22jan16,yat  Fix ios device cleanup (US73564)
 12jan16,yat  Add notifyFbAddrChangeFuncPtr feature (US73564)
 23nov15,yat  Fix static analysis defect (US71171)
@@ -678,8 +679,14 @@ LOCAL STATUS createMem
      * The memory should be writeable and non-cached, this is important for
      * supporting frame-buffer operations.
      */
-    (void)vmStateSet (NULL, virtAddr, pDev->fbSize,
-                      GFX_VM_STATE_MASK, GFX_VM_STATE);
+    if (ERROR == vmStateSet (NULL, virtAddr, pDev->fbSize,
+                             GFX_VM_STATE_MASK, GFX_VM_STATE))
+        {
+        free (gfxComp.videoMemory);
+        gfxComp.videoMemory = NULL;
+        (void)fprintf (stderr, "vmStateSet error\n");
+        return ERROR;
+        }
 
     if (ERROR == vmTranslate (NULL, virtAddr, &physAddr))
         {
@@ -1981,6 +1988,12 @@ LOCAL void drvCleanup
 
     if (gfxComp.init && gfxComp.videoMemory)
         {
+        if (ERROR == vmStateSet (NULL, (VIRT_ADDR)gfxComp.videoMemory, pDev->fbSize,
+                                 MMU_ATTR_CACHE_MSK, MMU_ATTR_CACHE_DEFAULT))
+            {
+            (void)fprintf (stderr, "vmStateSet error\n");
+            }
+
         free (gfxComp.videoMemory);
         gfxComp.videoMemory = NULL;
         }
