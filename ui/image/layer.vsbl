@@ -1,0 +1,32 @@
+/* layer.vsbl - Image layer */
+
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+05jan16,rtm  add UI Feature (US73137)
+22dec14,yat  Add DOC_BUILD NO and remove VSB_REQUIRES (US46449)
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer  IMAGE
+    {
+    SYNOPSIS        Image libraries
+    HELP            This provides various image libraries.
+    VERSION         1.0.0.2
+    VENDOR          Wind River
+    FEATURE         UI
+    OPTIONAL        YES
+    DEFAULT         NO
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.0.1, FEATURE, UI}
+    }

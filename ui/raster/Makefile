@@ -15,6 +15,6 @@ TGT_DIR=$(WIND_BASE)/target
 DOC_OPTS = -mg -nostrict -missingok
 
 include $(TGT_DIR)/h/make/defs.library
-SUBDIRS = mesa mesa_demos
+SUBDIRS = mesa mesa_demos vg vg_demos
 
 include $(TGT_DIR)/h/make/rules.library

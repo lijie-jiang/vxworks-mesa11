@@ -1,0 +1,40 @@
+/* layer.vsbl file for ZLIB layer  */
+/*
+ * Copyright (c) 2013-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+
+/*
+Modification history
+--------------------
+07jan16,mze  add FEATURE (US73137)
+10aug15,iwr  updated HELP field
+28jan15,kk   rev'ed to 1.2.8.2 to fix V7COR-2304
+23dec14,my_  update version number for VxBL (F775)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+06jan14,rdl  add HELP field, correct formatting 
+25jul13,f_f  Created.
+*/
+
+/*
+ * Settiong DOC_BUILD to NO since there is no DOC_FILES listing 
+ * in the src/Makefile.
+ */
+
+Layer ZLIB
+    {
+    SYNOPSIS        ZLIB compression support
+    HELP            This provides the zlib open source library (www.zlib.net). Provides support for compressing and uncompressing *.zip files.  
+    VERSION         1.2.8.4
+    VENDOR          Wind River
+    FEATURE         COREOS
+    VSB_REQUIRES
+    OPTIONAL        YES
+    DEFAULT         YES
+    PARENT
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.2.8.4, FEATURE, COREOS}
+    }

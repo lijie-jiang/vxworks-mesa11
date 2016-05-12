@@ -1,0 +1,41 @@
+/* layer.vsbl - Graphics Framework Vector Graphics layer */
+
+/*
+ * Copyright (c) 2014-2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River License agreement.
+ */
+
+/*
+modification history
+--------------------
+11jan16,rtm  add UI and RETROFIT (US73137)
+08oct15,yat  Update version to 1.0.3.0 for GFX_FIXED_FBMODE_OFFSET (US67554)
+15sep15,jxy  Update version to 1.0.2.1
+12jun15,yat  Update version to 1.0.2.0 for xlnxlcvc offset (US58560)
+16apr15,yat  Add DOC_BUILD NO (V7GFX-245)
+22dec14,yat  Update version to 1.0.1.0 for LP64 support (US50456)
+14feb14,rdl  replace DEPENDS with API_DEPENDS
+24jan14,mgc  Modified for VxWorks 7 release
+06jan14,rdl  add HELP field, correct formatting 
+*/
+
+
+Layer VG 
+    {
+    SYNOPSIS        Software Vector Graphics Library
+    HELP            This provides the software Vector Graphics library.
+    VERSION         1.0.3.0
+    VENDOR          Wind River
+    FEATURE         UI
+    LAYER_REQUIRES  KHRONOS RASTER_COMMON IMAGE_JPEG IMAGE_PNG
+    VSB_REQUIRES    gnu_SUPPORTED
+    FEATURE_REQUIRES {FBDEV_COMMON FBDEV_FIXED_FBMODE_OFFSET}
+    OPTIONAL        YES
+    DEFAULT         NO
+    FASTBUILD       YES
+    DOC_BUILD       NO
+    RETROFIT        {REPLACE, 1.0.0.0 - 1.0.3.0, FEATURE, UI}
+    }

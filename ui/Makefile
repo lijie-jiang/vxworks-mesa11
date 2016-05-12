@@ -20,6 +20,6 @@ export _WRS_CONFIG_FBDEV_TASK=y
 DOC_OPTS = -mg -nostrict -missingok
 
 include $(TGT_DIR)/h/make/defs.library
-SUBDIRS = evdev fbdev font gpudev raster xml 
+SUBDIRS = evdev fbdev font image gpudev raster xml zlib
 
 include $(TGT_DIR)/h/make/rules.library
